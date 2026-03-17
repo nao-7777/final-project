@@ -9,28 +9,32 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 
-  <%# 背景をbodyに固定することで、隙間が絶対に白くならないようにします %>
   <body class="m-0 p-0 min-h-screen" style="background: linear-gradient(180deg, #ffe2ea 30%, #97DBC1 90%); background-attachment: fixed;">
     
-    <% if user_signed_in? %>
-      <nav class="bg-white shadow-sm p-4">ログイン後のメニュー</nav>
-    <% else %>
-      <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
-        <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
-          <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm text-gray-400 font-bold text-xs">ロゴ</div>
-        <% end %>
-        <%= link_to "ログイン", new_user_session_path, 
-            class: "px-6 py-2.5 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 hover:shadow-lg shadow-md inline-block text-center",
-            style: "background-color: #65C7A4;" %>
-      </header>
+    <%# --- 修正ポイント：content_for(:no_nav) が無いときだけ表示 --- %>
+    <% unless content_for?(:no_nav) %>
+      <% if user_signed_in? %>
+        <%# ログイン後の共通メニュー（今は空にしておきます） %>
+        <nav class="p-4 bg-transparent">
+          <%# ここに文字が入っていたので削除しました %>
+        </nav>
+      <% else %>
+        <header class="fixed top-0 left-0 w-full flex justify-between items-center p-6 z-50 bg-transparent">
+          <%= link_to root_path, class: "transition-transform hover:scale-105 active:scale-95" do %> 
+            <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm text-gray-400 font-bold text-xs">ロゴ</div>
+          <% end %>
+          <%= link_to "ログイン", new_user_session_path, 
+              class: "px-6 py-2.5 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 hover:shadow-lg shadow-md inline-block text-center",
+              style: "background-color: #65C7A4;" %>
+        </header>
+      <% end %>
     <% end %>
 
     <main>
-      <%# 通知エリアは各画面のカード内に移動したので、ここは yield だけ %>
       <%= yield %>
     </main>
 
-    <%# メール送信後のモーダルスクリプト %>
+    <%# メール送信後のモーダルスクリプト（そのまま） %>
     <% if flash[:sent_modal] %>
       <script>
         function showSentModal() {

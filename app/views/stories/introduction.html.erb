@@ -1,0 +1,103 @@
+<%# 1. ナビゲーションを消す %>
+<% content_for :no_nav, true %>
+
+<div class="min-h-screen w-full flex flex-col items-center justify-center p-6 relative overflow-hidden">
+  
+  <div class="relative z-10 flex flex-col items-center animate-fade-in w-full max-w-lg">
+    <%# --- 🦊 狐さんエリア --- %>
+    <div class="w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mb-6 animate-float">
+      <%= image_tag "いらすとや狐.png", class: "w-full h-full object-contain filter drop-shadow-2xl" %>
+    </div>
+
+    <%# --- 💬 セリフカード --- %>
+    <div id="story-card" class="relative w-full max-w-[440px] cursor-pointer" onclick="window.nextDialogue()">
+      <div class="w-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] px-8 py-12 md:px-10 md:py-14 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/60 transition-all active:scale-95 active:bg-white/50">
+        
+        <%# セリフ表示エリア %>
+        <div id="dialogue-text" class="text-gray-800 leading-relaxed font-bold text-xl md:text-2xl text-center flex items-center justify-center min-h-[110px]">
+          「よく来たの。今日からお主も『まにまに散歩』の仲間入りじゃ。」
+        </div>
+
+        <%# --- 右下のマーク（濃い緑） --- %>
+        <div class="absolute bottom-6 right-8 flex items-center gap-1 text-[#2E7D32] font-black animate-bounce-x pointer-events-none">
+          <span class="text-[10px] opacity-80 tracking-widest">NEXT</span>
+          <span class="text-xl">≫</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# --- エラー回避用の隠しフォーム（PATCH送信を確実にする） --- %>
+  <div class="hidden">
+    <%= form_with url: finish_story_path, method: :patch, id: 'finish-form', local: true do %>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // セリフのリスト
+    const dialogues = [
+      "「よく来たの。今日からお主も『まにまに散歩』の仲間入りじゃ。」",
+      "「この世界には、歩くことでしか出会えぬ物語がたくさんある。」",
+      "「準備はよいか？さあ、お主だけの散歩へ出かけるとするかの！」"
+    ];
+
+    let currentIndex = 0;
+
+    // 次のセリフへ進む関数
+    window.nextDialogue = function() {
+      const textElement = document.getElementById("dialogue-text");
+      const finishForm = document.getElementById("finish-form");
+      
+      if (!textElement) return;
+
+      currentIndex++;
+
+      if (currentIndex < dialogues.length) {
+        // セリフを切り替える
+        textElement.style.opacity = 0;
+        setTimeout(() => {
+          textElement.innerText = dialogues[currentIndex];
+          textElement.style.opacity = 1;
+        }, 150);
+      } else {
+        // 全セリフ終了：フォームをPATCH送信する
+        if (finishForm) {
+          finishForm.submit();
+        }
+      }
+    };
+
+    // 画面遷移時にインデックスをリセット（ブラウザバック対策）
+    document.addEventListener("turbo:load", () => { 
+      currentIndex = 0; 
+    });
+  })();
+</script>
+
+<style>
+  /* フェード切り替え */
+  #dialogue-text { transition: opacity 0.2s ease-in-out; }
+
+  /* NEXTマークの横揺れ */
+  @keyframes bounceX {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+  }
+  .animate-bounce-x { animation: bounceX 0.8s infinite; }
+
+  /* 狐さんのふわふわ浮遊 */
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-12px); }
+  }
+  .animate-float { animation: float 2.5s ease-in-out infinite alternate; }
+
+  /* 画面全体の登場アニメーション */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.22, 1, 0.36, 1); }
+</style>

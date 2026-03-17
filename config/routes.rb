@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'stories/introduction'
   # 1. ルートパスをTopコントローラーのindexアクションに設定
   root 'top#index'
 
@@ -20,4 +21,10 @@ Rails.application.routes.draw do
   end
 
   get 'password_reset_success', to: 'pages#password_reset_success'
+
+  # ストーリー導入ページ
+  get 'welcome', to: 'stories#introduction', as: 'introduction'
+  
+  # 導入後に「次へ」を押したときのフラグ更新用（後で作ります）
+  patch 'stories/finish', to: 'stories#finish', as: 'finish_story'
 end
