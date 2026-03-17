@@ -1,26 +1,7 @@
 <div class="min-h-screen w-full flex flex-col items-center justify-between p-6 pb-24 relative overflow-hidden">
   
   <%# --- 1. 左上のステータスエリア --- %>
-  <div class="absolute top-8 left-6 flex flex-col gap-2 z-20">
-    <%# レベル & 経験値バー %>
-    <div class="flex flex-col">
-      <div class="flex items-center gap-2">
-        <div class="bg-[#65C7A4] text-white font-black px-3 py-1 rounded-full text-sm shadow-sm">
-          Lv.1
-        </div>
-        <span class="text-gray-700 font-bold text-sm">キャラの名前</span>
-      </div>
-      <%# 経験値バー（ダミー） %>
-      <div class="w-32 h-2 bg-white/50 rounded-full mt-1 overflow-hidden border border-white/30">
-        <div class="bg-[#65C7A4] h-full w-[40%]"></div>
-      </div>
-    </div>
-
-    <%# 親愛度エリア %>
-    <div class="bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm border border-white/80 w-fit">
-      <span class="text-[#E91E63] text-xs font-bold">親愛度 ★☆☆☆☆</span>
-    </div>
-  </div>
+  <%= render 'layouts/header' %>
 
   <%# --- 2. メインキャラ（中央） --- %>
   <div class="flex-1 flex items-center justify-center w-full z-10">
