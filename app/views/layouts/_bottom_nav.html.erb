@@ -1,0 +1,26 @@
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-[calc(100%+4px)] -mb-[2px] bg-white/75 backdrop-blur-md rounded-t-[3rem] h-28 px-4 pt-5 flex justify-around items-start z-30 border-2 border-[#ACACAC] border-b-0 shadow-[0_-12px_40px_rgba(0,0,0,0.05)]">
+  
+  <%# ホーム %>
+  <%= link_to root_path, class: "flex flex-col items-center gap-1.5 w-1/4 #{current_page?(root_path) ? 'text-[#65C7A4]' : 'text-gray-400'} transition-all active:scale-95" do %>
+    <i class="bi bi-house-door-fill text-4xl"></i>
+    <span class="text-[11px] font-black tracking-tighter">ホーム</span>
+  <% end %>
+
+  <%# 神社 %>
+  <div class="flex flex-col items-center gap-1.5 w-1/4 text-gray-400">
+    <i class="bi bi-bank text-4xl"></i>
+    <span class="text-[11px] font-black tracking-tighter">神社</span>
+  </div>
+
+  <%# 記録 %>
+  <div class="flex flex-col items-center gap-1.5 w-1/4 text-gray-400">
+    <i class="bi bi-journal-text text-4xl"></i>
+    <span class="text-[11px] font-black tracking-tighter">記録</span>
+  </div>
+
+  <%# 設定 %>
+  <div class="flex flex-col items-center gap-1.5 w-1/4 text-gray-400">
+    <i class="bi bi-person-gear text-4xl"></i>
+    <span class="text-[11px] font-black tracking-tighter">設定</span>
+  </div>
+</div>
