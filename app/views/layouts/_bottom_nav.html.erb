@@ -20,9 +20,9 @@
     <span class="text-[11px] font-black tracking-tighter">記録</span>
   </div>
 
-  <%# 設定 %>
-  <div class="flex flex-col items-center gap-1.5 w-1/4 text-gray-400">
+  <%# マイページ %>
+  <%= link_to mypage_path, class: "flex flex-col items-center gap-1.5 w-1/4 #{current_page?(mypage_path) ? 'text-[#65C7A4]' : 'text-gray-400'} transition-all active:scale-95" do %>
     <i class="bi bi-person-gear text-4xl"></i>
-    <span class="text-[11px] font-black tracking-tighter">設定</span>
-  </div>
+    <span class="text-[11px] font-black tracking-tighter">マイページ</span>
+  <% end %>
 </div>

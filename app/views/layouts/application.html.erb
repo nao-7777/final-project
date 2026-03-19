@@ -6,6 +6,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <%# --- 1. アイコンを表示するために追加 --- %>
@@ -37,6 +38,8 @@
     <% if user_signed_in? && !content_for?(:no_nav) %>
       <%= render 'layouts/bottom_nav' %>
     <% end %>
+
+    <%= turbo_frame_tag "modal" %>
 
     <%# --- SweetAlert2 のスクリプト（そのまま） --- %>
     <% if flash[:sent_modal] %>
