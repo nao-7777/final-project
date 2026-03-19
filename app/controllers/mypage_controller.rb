@@ -30,16 +30,17 @@ class MypageController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            # 1. マイページ本体（user_profile）を更新する
+            # 1. 背後のプロフィールカードを更新
             turbo_stream.replace("user_profile", partial: "mypage/profile_card", locals: { user: @user }),
-            # 2. モーダル（modal）を空っぽにして閉じる
-            turbo_stream.update("modal", "")
-          ]
+            
+            # 2. 送信完了画面に差し替える
+            turbo_stream.replace("modal", partial: "mypage/email_sent_modal")
+        ]
         end
-       format.html { redirect_to mypage_path, notice: "更新しました" }
+        format.html { redirect_to mypage_path, notice: "更新しました" }
       end
     else
-      render :edit_email, status: :unprocessable_entity
+      render :edit_email, status: :unprocessable_entity, layout: false
     end
   end
 
