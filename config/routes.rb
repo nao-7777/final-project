@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get 'mypage/edit_email', to: 'mypage#edit_email', as: 'edit_mypage_email'
   patch 'mypage/update_name', to: 'mypage#update_name', as: 'update_mypage_name'
   patch 'mypage/update_email', to: 'mypage#update_email', as: 'update_mypage_email'
+  resources :walkings, only: [:new, :create]
 
   # 3. デバイスの設定（ログアウトを確実に優先させる）
   devise_for :users, controllers: {
