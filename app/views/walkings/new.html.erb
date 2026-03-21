@@ -21,7 +21,7 @@
     <%= render partial: 'layouts/header', locals: { is_status_mode: true } %>
     
     <%# --- 2. 右上のコントロールエリア --- %>
-    <div style="position: absolute; top: 24px; right: 24px; text-align: right; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+    <div style="position: absolute; top: 32px; right: 24px; text-align: right; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
       
       <%# お散歩をやめるボタン %>
       <%= link_to root_path, style: "display: inline-block; background: white; padding: 8px 18px; border-radius: 99px; box-shadow: 0 4px 15px rgba(238, 128, 149, 0.2); text-decoration: none; border: 2px solid #EE8095; transition: all 0.3s;" do %>
@@ -53,15 +53,31 @@
     width: 88%; 
     max-width: 380px; 
     transform: translateX(-50%); 
-    background: rgba(255, 240, 243, 0.9); 
+    background: rgba(255, 250, 252, 0.95); 
     backdrop-filter: blur(15px);
-    padding: 25px 25px; 
-    border-radius: 2.2rem; 
-    border: 2px solid white; 
-    box-shadow: 0 15px 35px rgba(238, 128, 149, 0.15);
+    padding: 35px 25px 20px 25px; 
+    border-radius: 2.5rem; 
+    border: none; 
+    box-shadow: 0 10px 40px rgba(101, 199, 164, 0.15);
     pointer-events: auto;
     z-index: 50;
   ">
+
+  <%# 吹き出しのしっぽ %>
+    <div style="
+      position: absolute;
+      bottom: -18px; <%# カードの下に配置 %>
+      left: 50%; <%# 中央から %>
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      backdrop-filter: blur(15px);
+      border-top: 20px solid rgba(255, 250, 252, 0.95);
+      filter: drop-shadow(0 10px 10px rgba(101, 199, 164, 0.1));
+    "></div>
+
     <div style="text-align: center;">
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px;">
         <span style="height: 2px; width: 20px; background: #EE8095; opacity: 0.5;"></span>
@@ -73,8 +89,8 @@
         赤いポストを<br>見つけて写真を撮ろう！
       </div>
       
-      <%# 💡 align-items: center; でボタン同士の「真ん中」を揃える %>
-      <div style="display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 0 5px;">
+      <%# スキップとクリアのボタン %>
+      <div style="display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 0 5px; margin-top: 20px;">
         <button style="flex: 0 0 80px; height: 35px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; box-shadow: 0 4px 10px rgba(238, 128, 149, 0.1); display: flex; align-items: center; justify-content: center; padding: 0;">SKIP</button>
         <button style="flex: 0 0 120px; height: 45px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 16px; cursor: pointer; letter-spacing: 0.05em; box-shadow: 0 6px 15px rgba(101, 199, 164, 0.3); display: flex; align-items: center; justify-content: center; padding: 0;">クリア！</button>
       </div>
