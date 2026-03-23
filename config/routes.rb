@@ -30,4 +30,11 @@ Rails.application.routes.draw do
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
+
+  # 5. お散歩関連（ランダムお題取得用のルートも追加）
+  resources :walkings do
+    collection do
+      get :random_mission
+    end
+  end
 end

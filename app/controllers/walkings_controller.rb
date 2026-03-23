@@ -1,10 +1,16 @@
 class WalkingsController < ApplicationController
   def new
-    # ここにお散歩開始時の初期化処理をあとで書きます
+    # 最初のお題を1つセットしておく
+    @current_mission = Mission.order("RANDOM()").first
   end
 
   def create
     # お散歩終了時の保存処理をあとで書きます
-    # redirect_to mypage_path, notice: "お散歩を保存しました！"
+  end
+
+  # 💡 追加：JavaScriptから呼ばれるランダムお題取得用
+  def random_mission
+    @mission = Mission.order("RANDOM()").first
+    render json: { title: @mission.title }
   end
 end
