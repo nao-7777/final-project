@@ -12,9 +12,11 @@
     <div style="font-size: 1.4rem; font-weight: 900; color: #EE8095; margin-bottom: 15px;">お題</div>
     
     <div id="mission-text"
-         data-mission-id="<%= @current_mission&.id %>"
-         style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 20px; min-height: 3em; display: flex; align-items: center; justify-content: center;">
-      <%= @current_mission&.title || "赤いポストを見つけて写真を撮ろう！" %>
+       data-mission-id="<%= @current_mission&.id %>"
+       style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 20px; min-height: 3em; 
+              display: flex; align-items: center; justify-content: center;
+              white-space: pre-wrap; text-align: center;"> <%# 💡 この2つを追加 %>
+      <%= @current_mission&.title || "赤いポストを見つけて\n写真を撮ろう！" %>
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
