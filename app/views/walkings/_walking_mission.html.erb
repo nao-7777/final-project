@@ -88,7 +88,6 @@
   };
 
   window.addPhotoToAlbum = function(url, title) {
-    // 💡 既存のアルバム追加ロジック
     if (typeof window.addPhotoToAlbumUI === 'function') {
       window.addPhotoToAlbumUI(url, title);
     } else {
@@ -120,34 +119,33 @@
     const missionTarget = document.getElementById('mission-text');
     const fileInput = document.getElementById('camera-input');
     const missionId = missionTarget.dataset.missionId;
+    // 💡 散歩IDを定義
+    const walkId = "<%= @walk.id %>"; 
 
-    // 💡 修正：写真がなくてもお題IDがあればクリア処理を行う
     if (missionId) {
       const currentTitle = missionTarget.innerText;
       const formData = new FormData();
       formData.append('mission_id', missionId);
-      formData.append('walk_id', "<%= @walk.id %>"); 
+      // コントローラー側で params[:id] を使うので walk_id は不要（URLに含めるため）
 
-      // 写真が選択されていれば追加
       if (fileInput.files && fileInput.files[0]) {
         formData.append('image', fileInput.files[0]);
       }
 
       try {
         const token = document.querySelector('meta[name="csrf-token"]').content;
-        const res = await fetch('/walkings/upload_image', {
+        // 💡 通信先URLを /walkings/:id/upload_image に修正
+        const res = await fetch(`/walkings/${walkId}/upload_image`, {
           method: 'POST',
           headers: { 'Accept': 'application/json', 'X-CSRF-Token': token },
           body: formData
         });
         const data = await res.json();
         
-        // 写真がある場合のみアルバムに反映
         if (data.status === 'success' && data.image_url) {
           window.addPhotoToAlbum(data.image_url, currentTitle);
         }
         
-        // 💡 ヘッダーの経験値バーを連動（もし関数があれば）
         if (window.updateHeaderStatus) {
           window.updateHeaderStatus(data);
         }

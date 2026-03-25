@@ -31,12 +31,13 @@ Rails.application.routes.draw do
   # 5. お散歩・アルバム関連（ここを1つに統合）
   resources :walkings, only: [:index, :new, :create, :show, :update] do
     member do
-      # 💡 途中保存用のルーティングを追加
+      # 💡 途中保存用
       patch :save_progress 
+      # 💡 特定の散歩(id)に対して画像をアップロードするので member に移動
+      post :upload_image 
     end
     collection do
       get :random_mission
-      post :upload_image
     end
   end
 
@@ -44,4 +45,11 @@ Rails.application.routes.draw do
   get 'album', to: 'walkings#index', as: 'album'
 
   # 💡 WalksControllerは不要になったので resources :walks は削除しました
+
+  # 6. 散歩記録
+  resources :walking_logs, only: [:index, :show] do
+    collection do
+      get 'date/:date', to: 'walking_logs#date_index', as: :date
+    end
+  end
 end

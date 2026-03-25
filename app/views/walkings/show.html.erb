@@ -77,7 +77,6 @@
             <%= @is_level_up ? current_user.level - 1 : current_user.level %>
           </span>
         </p>
-        <%# 💡 修正：Next表示を分数形式に変更 %>
         <p id="next-exp-text" class="text-xs text-gray-400 font-bold mb-1">
           <span class="text-[#49B394]"><%= current_user.exp %></span> / <%= current_user.required_exp_for_next_level %> EXP
         </p>
@@ -111,15 +110,19 @@
     </div>
   </div>
 
+  <%# --- 💡 写真一覧セクション（ここを修正しました） --- %>
   <% if @captured_missions.any? %>
     <h2 class="text-[#49B394] text-xl font-black mt-10 mb-4 text-center">見つけた思い出</h2>
     <div class="grid grid-cols-2 gap-4 w-full max-w-md px-2">
       <% @captured_missions.each_with_index do |mission, i| %>
         <% if mission.image.attached? %>
-          <% rotation = [1, -1, 2, -2][i % 4] %>
-          <div class="bg-white p-2 pb-6 rounded-sm shadow-lg transform rotate-<%= rotation %> border border-gray-100">
+          <%# 💡 rotation値を計算してinline styleで適用 %>
+          <% rotation = [2, -2, 3, -3][i % 4] %>
+          <div class="bg-white p-2 pb-6 rounded-sm shadow-lg border border-gray-100" style="transform: rotate(<%= rotation %>deg);">
             <%= image_tag mission.image, class: "w-full h-32 object-cover" %>
-            <p class="text-[10px] font-bold text-gray-400 mt-2 text-center font-mono"><%= mission.updated_at.strftime("%Y.%m.%d") %></p>
+            <p class="text-[10px] font-bold text-gray-400 mt-2 text-center font-mono">
+              <%= mission.updated_at.strftime("%Y.%m.%d") %>
+            </p>
           </div>
         <% end %>
       <% end %>
