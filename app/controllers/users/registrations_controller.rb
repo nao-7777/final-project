@@ -10,4 +10,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def after_sign_up_path_for(resource)
     signup_success_path
   end
+
+  def after_inactive_sign_up_path_for(resource)
+    signup_success_path
+  end
 end

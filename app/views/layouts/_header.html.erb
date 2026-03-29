@@ -1,3 +1,11 @@
+<%# 💡 今連れているキャラクターのデータを取得 %>
+<% active_char = current_user.user_characters.first %>
+<%# 💡 データがない場合の初期値設定 %>
+<% current_lv = active_char&.level || 1 %>
+<% current_exp = active_char&.exp || 0 %>
+<% current_limit = active_char ? active_char.required_exp_for_next_level : 500 %>
+<% percent = (current_exp.to_f / current_limit * 100).clamp(0, 100) %>
+
 <div class="flex flex-col gap-3 p-6 font-sans select-none">
   <div class="flex items-center gap-3">
     <%# --- LEVELの丸（実データ連動 + ぷっくり加工） --- %>
@@ -7,27 +15,24 @@
       
       <span class="text-[9px] font-black leading-none mb-0.5 tracking-tighter opacity-90">LEVEL</span>
       <span class="text-3xl font-black leading-none drop-shadow-sm">
-        <%= current_user.level %>
+        <%# 💡 キャラクターのレベルを表示 %>
+        <%= current_lv %>
       </span>
     </div>
     
     <%# --- キャラクターの名前 --- %>
     <div class="mb-1">
       <span class="text-[#4C6496] font-black text-xl tracking-tighter italic">
-        <%# 💡 ここを「キャラの名前」に変更（カラム名に合わせて調整してください） %>
-        <%= current_user.fox_image_name || "フォックス" %> 
+        <%# 💡 キャラクター名を表示（characterモデルのnameを参照） %>
+        <%= active_char&.character&.name || "フォックス" %> 
       </span>
     </div>
   </div>
   
   <%# --- 経験値バー --- %>
   <div class="relative -mt-1">
-    <%# 進行度の計算 %>
-    <% current_limit = current_user.required_exp_for_next_level %>
-    <% percent = (current_user.exp.to_f / current_limit * 100).clamp(0, 100) %>
-
     <div class="w-50 h-3.5 bg-white/60 rounded-full overflow-hidden border-2 border-white shadow-sm relative">
-      <%# 💡 数値テキストは削除し、バーの伸びだけを表示 %>
+      <%# 💡 進行度(percent)に合わせてバーが伸びる %>
       <div class="bg-gradient-to-r from-[#65C7A4] to-[#AEEAD3] h-full rounded-full shadow-inner transition-all duration-500" 
            style="width: <%= percent %>%;">
       </div>

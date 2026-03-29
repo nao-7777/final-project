@@ -1,4 +1,4 @@
-<%# ホーム画面 %>
+<%# 💡 全体の背景を神社の境内グラデーションに適用（!importantで確実に上書き） %>
 <div class="min-h-screen w-full flex flex-col items-center p-6 pb-24 relative overflow-hidden">
   
   <%# --- 1. 左上のステータスエリア --- %>
@@ -10,8 +10,8 @@
 
   <%# --- 2. メインキャラ（背面・巨大） --- %>
   <div class="absolute top-[20%] left-1/2 -translate-x-1/2 w-[130vw] max-w-[500px] h-auto z-0 pointer-events-none flex justify-center">
-    <div class="relative w-full h-full animate-float">
-      <%# 💡 修正：レベルに応じて画像が切り替わるように変更 %>
+    <div class="relative w-full h-full">
+      <%# 💡 浮遊クラス（animate-float）を削除しました %>
       <%= image_tag current_user.fox_image_name, class: "w-full h-auto object-contain filter drop-shadow-xl" %>
     </div>
   </div>

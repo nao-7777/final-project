@@ -1,11 +1,10 @@
 Rails.application.routes.draw do
-  # 1. ルートパス
   root 'top#index'
 
   # 2. マイページ関連
-  get 'mypage',             to: 'mypage#show',         as: 'mypage'
-  get 'mypage/edit_name',   to: 'mypage#edit_name',    as: 'edit_mypage_name'
-  get 'mypage/edit_email',  to: 'mypage#edit_email',   as: 'edit_mypage_email'
+  get 'mypage', to: 'mypage#show', as: 'mypage'
+  get 'mypage/edit_name', to: 'mypage#edit_name', as: 'edit_mypage_name'
+  get 'mypage/edit_email', to: 'mypage#edit_email', as: 'edit_mypage_email'
   patch 'mypage/update_name', to: 'mypage#update_name', as: 'update_mypage_name'
   patch 'mypage/update_email', to: 'mypage#update_email', as: 'update_mypage_email'
 
@@ -15,10 +14,8 @@ Rails.application.routes.draw do
     passwords: 'users/passwords'
   }
 
-  # 4. その他ユーザー関連
   resources :users, only: [:index, :show, :edit, :update] 
 
-  # --- ストーリー・その他 ---
   get 'welcome', to: 'stories#introduction', as: 'introduction'
   patch 'stories/finish', to: 'stories#finish', as: 'finish_story'
   get 'signup_success', to: 'pages#signup_success'
@@ -28,28 +25,27 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
-  # 5. お散歩・アルバム関連（ここを1つに統合）
+  # 5. お散歩・アルバム関連
   resources :walkings, only: [:index, :new, :create, :show, :update] do
-    member do
-      # 💡 途中保存用
-      patch :save_progress 
-      # 💡 特定の散歩(id)に対して画像をアップロードするので member に移動
-      post :upload_image 
-    end
+    # 💡 collectionを先に書く（ID判定より先にチェックさせる）
     collection do
       get :random_mission
     end
+
+    member do
+      patch :save_progress 
+      post :upload_image 
+      patch :complete_mission 
+    end
   end
 
-  # アルバムへのショートカット
   get 'album', to: 'walkings#index', as: 'album'
 
-  # 💡 WalksControllerは不要になったので resources :walks は削除しました
-
-  # 6. 散歩記録
   resources :walking_logs, only: [:index, :show] do
     collection do
       get 'date/:date', to: 'walking_logs#date_index', as: :date
     end
   end
+
+  resources :characters, only: [:index, :show]
 end

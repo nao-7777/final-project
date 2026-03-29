@@ -15,25 +15,18 @@ class User < ApplicationRecord
     end
   end
 
-  # 次のレベルまでに必要なEXPを計算
-  def required_exp_for_next_level
-    level * 500
-  end
+  has_many :user_characters, dependent: :destroy
+  has_many :characters, through: :user_characters
+  
+  after_create :add_default_character
 
-  # 経験値を加算し、レベルアップをチェックする
-  def gain_exp(amount)
-    # self.exp が nil の場合に備えて 0 をデフォルトにする
-    self.exp ||= 0
-    self.level ||= 1
+  private
+
+  def add_default_character
+    first_char = Character.where("name LIKE ?", "%金宵%").first
     
-    self.exp += amount
-    
-    # 経験値が溜まっている間、レベルを上げ続ける
-    while exp >= required_exp_for_next_level
-      self.exp -= required_exp_for_next_level
-      self.level += 1
+    if first_char
+      self.user_characters.create(character: first_char, evolved: false)
     end
-    
-    save!
   end
 end

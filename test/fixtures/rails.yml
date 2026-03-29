@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  g: MyString
+  model: MyString
+  UserCharacter: MyString
+  user: one
+  character: one
+  evolved: false
+
+two:
+  g: MyString
+  model: MyString
+  UserCharacter: MyString
+  user: two
+  character: two
+  evolved: false

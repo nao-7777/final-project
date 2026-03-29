@@ -1,38 +1,31 @@
-<%# 💡 ボトムナビを非表示にする %>
 <% content_for :no_nav, true %>
+<% @user_char = current_user.user_characters.first %>
 
 <style>
   @keyframes level-up-bounce {
     0% { transform: scale(1); }
-    30% { transform: scale(1.6); color: #FFD700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+    30% { transform: scale(1.6); color: #FFD700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
     100% { transform: scale(1); color: #49B394; }
   }
-  
-  .display-level-base {
-    display: inline-block;
-    transition: none !important;
-    will-change: transform;
-  }
-
-  .level-bounce-effect {
-    animation: level-up-bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  .display-level-base { display: inline-block; will-change: transform; }
+  .level-bounce-effect { animation: level-up-bounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+  @keyframes particle-burst {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
   }
 </style>
 
-<div class="min-h-screen bg-[#F0F9F6] flex flex-col items-center p-6 pb-20 relative">
+<%# 💡 justify-center を追加して、カードを上下中央に配置するように修正 %>
+<div class="min-h-screen bg-[#F0F9F6] flex flex-col items-center justify-center p-6 pb-20 relative">
   
-  <%# --- 1. 右上のバツボタン --- %>
-  <%= link_to root_path, class: "absolute top-6 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all active:scale-90 z-50 border border-gray-100" do %>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-    </svg>
+  <%= link_to root_path, class: "absolute top-6 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-400 z-50 border border-gray-100" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
   <% end %>
 
-  <h1 class="text-3xl font-black text-[#49B394] my-8 animate-bounce">お疲れ様でした！</h1>
+  <h1 class="text-3xl font-black text-[#49B394] mb-8 animate-bounce">お疲れ様でした！</h1>
 
-  <%# --- 2. メインスコアカード --- %>
+  <%# --- メインスコアカード --- %>
   <div class="w-full max-w-md bg-white rounded-[3rem] p-8 shadow-xl shadow-green-100 flex flex-col items-center gap-6 border-4 border-white">
-    
     <div class="text-center">
       <p class="text-gray-400 font-bold mb-1">今回の歩数</p>
       <div class="flex items-baseline justify-center gap-2">
@@ -43,109 +36,65 @@
 
     <div class="text-center">
       <p class="text-gray-400 font-bold mb-1">お散歩時間</p>
-      <p class="text-4xl font-black text-gray-600">
-        <%= format("%02d分%02d秒", @walk.duration / 60, @walk.duration % 60) %>
-      </p>
+      <p class="text-4xl font-black text-gray-600"><%= format("%02d分%02d秒", @walk.duration / 60, @walk.duration % 60) %></p>
     </div>
 
-    <div class="w-full bg-[#F0F9F6] rounded-2xl p-5 mt-2 border border-[#D1EBE3]">
-      <h3 class="text-[#49B394] font-black text-center mb-3">獲得した経験値</h3>
-      <div class="space-y-2 text-sm font-bold text-gray-600">
-        <div class="flex justify-between">
-          <span>お題クリア (<%= @mission_count %>個)</span>
-          <span>+<%= @mission_exp %> EXP</span>
-        </div>
-        <div class="flex justify-between">
-          <span>歩数ボーナス</span>
-          <span>+<%= @steps_exp %> EXP</span>
-        </div>
-        <div class="flex justify-between">
-          <span>時間ボーナス</span>
-          <span>+<%= @time_exp %> EXP</span>
-        </div>
-        <div class="flex justify-between border-t border-[#D1EBE3] pt-2 text-base text-[#49B394]">
-          <span>合計獲得</span>
-          <span>+<%= @total_exp %> EXP</span>
-        </div>
+    <div class="w-full bg-[#F0F9F6] rounded-2xl p-5 border border-[#D1EBE3]">
+      <div class="space-y-2 text-sm font-bold text-gray-600 text-center">
+          <span class="text-[#49B394]">合計獲得 +<%= @total_exp %> EXP</span>
       </div>
     </div>
 
-    <div class="w-full text-center mt-2">
+    <div class="w-full text-center">
       <div class="flex justify-between items-end px-1">
         <p class="font-black text-gray-700">Lv. 
           <span id="display-level" class="display-level-base text-3xl text-[#49B394]">
-            <%= @is_level_up ? current_user.level - 1 : current_user.level %>
+            <%= @is_level_up ? @user_char.level - 1 : @user_char.level %>
           </span>
         </p>
-        <p id="next-exp-text" class="text-xs text-gray-400 font-bold mb-1">
-          <span class="text-[#49B394]"><%= current_user.exp %></span> / <%= current_user.required_exp_for_next_level %> EXP
-        </p>
+        <p class="text-xs text-gray-400 font-bold"><span class="text-[#49B394]"><%= @user_char.exp %></span> / <%= @user_char.required_exp_for_next_level %> EXP</p>
       </div>
       
-      <div class="w-full bg-gray-100 h-5 rounded-full mt-1 overflow-hidden border-2 border-white shadow-inner relative">
+      <div class="w-full bg-gray-100 h-5 rounded-full mt-1 overflow-hidden border-2 border-white relative">
         <% 
-          if @is_level_up
-            old_level = current_user.level - 1
-            old_limit = old_level * 500
-            prev_exp_raw = (current_user.exp + old_limit) - @total_exp
-            prev_percent = (prev_exp_raw.to_f / old_limit * 100).clamp(0, 99)
-            current_limit = current_user.required_exp_for_next_level
-            current_percent = (current_user.exp.to_f / current_limit * 100).clamp(0, 100)
-          else
-            current_limit = current_user.required_exp_for_next_level
-            prev_exp_raw = [current_user.exp - @total_exp, 0].max
-            prev_percent = (prev_exp_raw.to_f / current_limit * 100).clamp(0, 100)
-            current_percent = (current_user.exp.to_f / current_limit * 100).clamp(0, 100)
-          end
+          req = @user_char.required_exp_for_next_level
+          prev_w = @is_level_up ? 85 : ([@user_char.exp - @total_exp, 0].max.to_f / req * 100).clamp(0, 95)
+          target_w = (@user_char.exp.to_f / req * 100).clamp(0, 100)
         %>
-        
         <div id="result-exp-bar" 
-             class="bg-gradient-to-r from-[#AEE6D7] to-[#49B394] h-full shadow-[0_0_10px_rgba(73,179,148,0.3)] transition-all ease-out" 
-             style="width: <%= prev_percent %>%; transition-duration: 1500ms;"
-             data-target-percent="<%= current_percent %>"
+             class="bg-gradient-to-r from-[#AEE6D7] to-[#49B394] h-full transition-all ease-out" 
+             style="width: <%= prev_w %>%; transition-duration: 1000ms;"
+             data-target-percent="<%= target_w %>"
              data-level-up="<%= @is_level_up %>"
-             data-final-level="<%= current_user.level %>">
+             data-final-level="<%= @user_char.level %>">
         </div>
       </div>
     </div>
   </div>
 
-  <%# --- 💡 写真一覧セクション（ここを修正しました） --- %>
+  <%# --- 写真一覧 --- %>
   <% if @captured_missions.any? %>
-    <h2 class="text-[#49B394] text-xl font-black mt-10 mb-4 text-center">見つけた思い出</h2>
-    <div class="grid grid-cols-2 gap-4 w-full max-w-md px-2">
-      <% @captured_missions.each_with_index do |mission, i| %>
-        <% if mission.image.attached? %>
-          <%# 💡 rotation値を計算してinline styleで適用 %>
-          <% rotation = [2, -2, 3, -3][i % 4] %>
-          <div class="bg-white p-2 pb-6 rounded-sm shadow-lg border border-gray-100" style="transform: rotate(<%= rotation %>deg);">
-            <%= image_tag mission.image, class: "w-full h-32 object-cover" %>
-            <p class="text-[10px] font-bold text-gray-400 mt-2 text-center font-mono">
-              <%= mission.updated_at.strftime("%Y.%m.%d") %>
-            </p>
-          </div>
+    <div class="w-full max-w-md mt-10">
+      <h2 class="text-[#49B394] text-xl font-black mb-4 text-center">見つけた思い出</h2>
+      <div class="grid grid-cols-2 gap-4 px-2">
+        <% @captured_missions.each_with_index do |m, i| %>
+          <% if m.image.attached? %>
+            <div class="bg-white p-2 pb-6 rounded-sm shadow-lg border border-gray-100" style="transform: rotate(<%= [2, -2, 3, -3][i % 4] %>deg);">
+              <%= image_tag m.image, class: "w-full h-32 object-cover" %>
+            </div>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
     </div>
   <% end %>
-
 </div>
 
 <script>
   window.createParticles = function(el) {
     const rect = el.getBoundingClientRect();
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 30; i++) {
       const p = document.createElement('div');
-      p.style.cssText = `
-        position: fixed; width: 10px; height: 10px; border-radius: 50%; 
-        pointer-events: none; z-index: 9999; 
-        left: ${rect.left + rect.width / 2}px; 
-        top: ${rect.top + rect.height / 2}px;
-        background: ${['#FFD700', '#65C7A4', '#EE8095'][Math.floor(Math.random() * 3)]};
-        --dx: ${(Math.random() - 0.5) * 300}px;
-        --dy: ${(Math.random() - 0.5) * 300}px;
-        animation: particle-burst 0.8s ease-out forwards;
-      `;
+      p.style.cssText = `position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:9999;left:${rect.left+rect.width/2}px;top:${rect.top+rect.height/2}px;background:${['#FFD700','#65C7A4','#EE8095'][Math.floor(Math.random()*3)]};--dx:${(Math.random()-0.5)*400}px;--dy:${(Math.random()-0.5)*400}px;animation:particle-burst 0.8s ease-out forwards;`;
       document.body.appendChild(p);
       setTimeout(() => p.remove(), 800);
     }
@@ -153,55 +102,29 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const bar = document.getElementById('result-exp-bar');
-    const lvDisplay = document.getElementById('display-level');
-    if (!bar || !lvDisplay) return;
-
-    if (<%= @total_exp %> <= 0) {
-      bar.style.transitionDuration = "0ms";
-      bar.style.width = bar.dataset.targetPercent + "%";
-      return;
-    }
+    const lv = document.getElementById('display-level');
+    if (!bar || !lv) return;
 
     setTimeout(() => {
+      const isUp = bar.dataset.levelUp === "true";
       const target = bar.dataset.targetPercent;
-      const isLevelUp = bar.dataset.levelUp === "true";
-      
-      if (isLevelUp) {
+
+      if (isUp) {
         bar.style.width = "100%";
-        
         setTimeout(() => {
-          lvDisplay.innerText = bar.dataset.finalLevel;
-          lvDisplay.classList.add('level-bounce-effect');
-          window.createParticles(lvDisplay); 
-
-          bar.style.transitionDuration = "0ms"; 
+          lv.innerText = bar.dataset.finalLevel;
+          lv.classList.add('level-bounce-effect');
+          window.createParticles(lv);
+          bar.style.transitionDuration = "0ms";
           bar.style.width = "0%";
-          
           setTimeout(() => {
-            bar.style.transitionDuration = "800ms";
+            bar.style.transitionDuration = "1000ms";
             bar.style.width = target + "%";
-            
-            setTimeout(() => {
-              lvDisplay.classList.remove('level-bounce-effect');
-            }, 700);
           }, 50);
-        }, 1500);
-
+        }, 1100);
       } else {
         bar.style.width = target + "%";
       }
     }, 500);
   });
-
-  if (!document.getElementById('particle-style')) {
-    const style = document.createElement('style');
-    style.id = 'particle-style';
-    style.innerHTML = `
-      @keyframes particle-burst {
-        0% { transform: translate(0, 0) scale(1); opacity: 1; }
-        100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
-      }
-    `;
-    document.head.appendChild(style);
-  }
 </script>

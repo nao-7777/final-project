@@ -3,12 +3,22 @@
   .btn-mission-clear:active { transform: scale(0.9); }
 
   #walking-mission-card {
-    position: absolute; top: 180px; left: 50%; width: 88%; max-width: 380px; 
-    transform: translateX(-50%); background: rgba(255, 250, 252, 0.95); 
-    backdrop-filter: blur(15px); padding: 30px 25px 20px 25px; 
-    border-radius: 2.5rem; box-shadow: 0 10px 40px rgba(101, 199, 164, 0.15); 
-    pointer-events: auto; z-index: 50;
+    position: fixed; 
+    top: 200px; 
+    left: 50%; 
+    width: 88%; 
+    max-width: 380px; 
+    transform: translateX(-50%); 
+    background: rgba(255, 255, 252, 0.97); 
+    backdrop-filter: blur(10px); 
+    padding: 30px 25px 20px 25px; 
+    border-radius: 2.5rem; 
+    box-shadow: 0 15px 40px rgba(60, 100, 80, 0.15); 
+    border: 2px solid #ffffff;
+    pointer-events: auto; 
+    z-index: 100;
   }
+
   #photo-preview-container {
     display: none; position: absolute; top: 215px; left: 15px; 
     width: 90px; height: 90px; background: white; padding: 6px; 
@@ -32,13 +42,15 @@
   
   <div style="text-align: center;">
     <div style="font-size: 1.4rem; font-weight: 900; color: #EE8095; margin-bottom: 15px;">お題</div>
-    <div id="mission-text" data-mission-id="<%= @current_mission&.id %>" style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 20px; min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center;">
+    <div id="mission-text" 
+         data-mission-id="<%= @current_mission&.id %>" 
+         style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 20px; min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center;">
       <%= (@current_mission&.title || "写真を撮ってクリアしよう！").html_safe %>
     </div>
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-      <button onclick="skipMission(event)" style="flex: 0 0 80px; height: 35px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 12px; cursor: pointer;">SKIP</button>
-      <button id="btn-complete" class="btn-mission-clear" onclick="completeMission(event)" style="flex: 0 0 120px; height: 45px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 16px; cursor: pointer;">クリア！</button>
+      <button type="button" onclick="skipMission(event)" style="flex: 0 0 80px; height: 35px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 12px; cursor: pointer;">SKIP</button>
+      <button type="button" id="btn-complete" class="btn-mission-clear" onclick="completeMission(event)" style="flex: 0 0 120px; height: 45px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 16px; cursor: pointer;">クリア！</button>
     </div>
   </div>
 </div>
@@ -46,11 +58,35 @@
 <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="previewImage(this)">
 
 <script>
+  let isFetchingMission = false;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const mt = document.getElementById('mission-text');
+    const cid = mt.dataset.missionId;
+    // 初回にIDがない場合のみ実行
+    if (!cid || cid === "" || cid === "null" || cid === "undefined") {
+      console.log("Mission ID missing on load, fetching...");
+      skipMission();
+    }
+  });
+
   async function fetchNewMission() {
+    if (isFetchingMission) return null;
+    isFetchingMission = true;
     try {
-      const res = await fetch('/walkings/random_mission', { headers: { 'Accept': 'application/json' } });
-      return await res.json();
-    } catch (e) { return null; }
+      const res = await fetch(`/walkings/random_mission.json?t=${Date.now()}`, { 
+        headers: { 'Accept': 'application/json' } 
+      });
+      if (!res.ok) throw new Error('Fetch failed');
+      const data = await res.json();
+      console.log("DEBUG: Rails returned ->", data); // これがコンソールに出るはず
+      return data;
+    } catch (e) { 
+      console.error("Fetch Error:", e);
+      return null; 
+    } finally {
+      isFetchingMission = false;
+    }
   }
 
   window.createParticles = function(el) {
@@ -87,91 +123,77 @@
     }
   };
 
-  window.addPhotoToAlbum = function(url, title) {
-    if (typeof window.addPhotoToAlbumUI === 'function') {
-      window.addPhotoToAlbumUI(url, title);
-    } else {
-      const container = document.getElementById('photo-album-content');
-      if (!container) return;
-      const noMsg = document.getElementById('no-photo-msg');
-      if (noMsg) noMsg.remove();
-
-      const html = `
-        <div style="width: 100px; height: 100px; position: relative; margin-bottom: 10px;">
-          <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
-          <div style="font-size: 10px; color: white; position: absolute; bottom: 5px; left: 5px; text-shadow: 1px 1px 2px black; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 90%;">
-            ${title}
-          </div>
-        </div>
-      `;
-      container.insertAdjacentHTML('afterbegin', html);
-    }
-  };
-
   window.completeMission = async function(event) {
-    const btn = event.currentTarget;
+    if (event) event.preventDefault();
+    const btn = document.getElementById('btn-complete');
     if (btn.dataset.loading === "true") return;
-    btn.dataset.loading = "true";
 
+    const mt = document.getElementById('mission-text');
+    const mid = mt.dataset.missionId;
+
+    if (!mid || mid === "null" || mid === "" || mid === "undefined") {
+       console.log("No Mission ID found. Skipping...");
+       await skipMission();
+       return;
+    }
+
+    btn.dataset.loading = "true";
     window.createParticles(btn);
     window.jumpFox();
 
-    const missionTarget = document.getElementById('mission-text');
+    const walkId = document.querySelector('[data-walking-timer-walk-id-value]')?.dataset.walkingTimerWalkIdValue || "<%= @walk&.id %>";
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+
+    const formData = new FormData();
+    formData.append('mission_id', mid);
+
+    let url = `/walkings/${walkId}/complete_mission.json`;
+    let method = 'PATCH';
+
     const fileInput = document.getElementById('camera-input');
-    const missionId = missionTarget.dataset.missionId;
-    // 💡 散歩IDを定義
-    const walkId = "<%= @walk.id %>"; 
-
-    if (missionId) {
-      const currentTitle = missionTarget.innerText;
-      const formData = new FormData();
-      formData.append('mission_id', missionId);
-      // コントローラー側で params[:id] を使うので walk_id は不要（URLに含めるため）
-
-      if (fileInput.files && fileInput.files[0]) {
-        formData.append('image', fileInput.files[0]);
-      }
-
-      try {
-        const token = document.querySelector('meta[name="csrf-token"]').content;
-        // 💡 通信先URLを /walkings/:id/upload_image に修正
-        const res = await fetch(`/walkings/${walkId}/upload_image`, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json', 'X-CSRF-Token': token },
-          body: formData
-        });
-        const data = await res.json();
-        
-        if (data.status === 'success' && data.image_url) {
-          window.addPhotoToAlbum(data.image_url, currentTitle);
-        }
-        
-        if (window.updateHeaderStatus) {
-          window.updateHeaderStatus(data);
-        }
-      } catch (e) { console.error("Save Error:", e); }
+    if (fileInput.files && fileInput.files[0]) {
+      formData.append('image', fileInput.files[0]);
+      url = `/walkings/${walkId}/upload_image.json`;
+      method = 'POST';
     }
 
-    const nextData = await fetchNewMission();
-    
-    setTimeout(() => {
-      if (nextData) {
-        missionTarget.innerHTML = nextData.title;
-        missionTarget.dataset.missionId = nextData.id;
+    try {
+      const res = await fetch(url, {
+        method: method,
+        headers: { 'Accept': 'application/json', 'X-CSRF-Token': token },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.status === 'success' || data.image_url) {
+        if (data.image_url && window.addPhotoToAlbum) {
+          window.addPhotoToAlbum(data.image_url, mt.innerText);
+        }
+        setTimeout(() => {
+          if (data.next_mission) {
+            mt.innerHTML = data.next_mission.title;
+            mt.dataset.missionId = data.next_mission.id;
+          }
+          btn.dataset.loading = "false";
+          document.getElementById('photo-preview-container').style.display = 'none';
+          fileInput.value = "";
+          if (window.showFoxTalk) showFoxTalk("おめでとう！クリアだね！");
+        }, 400);
       }
+    } catch (e) { 
+      console.error("Complete Error:", e);
       btn.dataset.loading = "false";
-      document.getElementById('photo-preview-container').style.display = 'none';
-      fileInput.value = "";
-      if (window.showFoxTalk) showFoxTalk("おめでとう！クリアだね！");
-    }, 400);
+    }
   };
 
   window.skipMission = async function(event) {
-    const nextData = await fetchNewMission();
-    const missionTarget = document.getElementById('mission-text');
-    if (nextData && missionTarget) {
-      missionTarget.innerHTML = nextData.title;
-      missionTarget.dataset.missionId = nextData.id;
+    if (event) event.preventDefault();
+    const data = await fetchNewMission();
+    const mt = document.getElementById('mission-text');
+    if (data && mt) {
+      // 💡 ここで確実にHTMLと属性を更新する
+      mt.innerHTML = data.title || "写真を撮ってクリアしよう！";
+      mt.dataset.missionId = data.id;
+      console.log("DOM Updated:", mt.innerHTML, mt.dataset.missionId);
     }
     document.getElementById('photo-preview-container').style.display = 'none';
   };

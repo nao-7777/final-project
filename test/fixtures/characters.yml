@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  description: MyText
+  image_v1: MyString
+  image_v2: MyString
+  rarity: 1
+  evolution_level: 1
+
+two:
+  name: MyString
+  description: MyText
+  image_v1: MyString
+  image_v2: MyString
+  rarity: 1
+  evolution_level: 1
