@@ -138,33 +138,35 @@
 
 <div class="log-index-body">
   <div class="notebook-paper">
-    <%# タイトルを動的に設定 %>
-    <div class="page-title"><%= @target_date.strftime("%Y / %m / %d") %> の記録</div>
+    <%# 💡 @target_date が nil の場合も考慮して &. を追加 %>
+    <div class="page-title">
+      <%= @target_date&.strftime("%Y / %m / %d") || "日付不明" %> の記録
+    </div>
 
-    <%# 修正ポイント: @dates ではなく @walking_logs を使います %>
     <% if @walking_logs && @walking_logs.any? %>
       <% @walking_logs.each do |walk| %>
         <%= link_to walking_log_path(walk), class: "log-item" do %>
           <span class="log-date-label">
-            <%= walk.end_at.strftime("%H:%M") %> 開始
+            <%= walk.end_at&.strftime("%H:%M") || "--:--" %> 開始
           </span>
           
           <div class="log-main-row">
             <div class="log-steps">
               <i class="bi bi-person-walking"></i>
-              <%= number_with_delimiter(walk.steps) %><small>steps</small>
+              <%# 💡 nil の場合は 0 を表示 %>
+              <%= number_with_delimiter(walk.steps || 0) %><small>steps</small>
             </div>
             
             <div class="log-info-right">
-              <div class="log-duration"><%= (walk.duration / 60) %> min</div>
-              <% exp = (walk.missions.count * 50) + ((walk.steps / 100) * 10) + ((walk.duration / 60) * 5) %>
+              <% safe_duration = walk.duration || 0 %>
+              <% safe_steps = walk.steps || 0 %>
+              
+              <div class="log-duration"><%= (safe_duration / 60) %> min</div>
+              
+              <% exp = (walk.missions.count * 50) + ((safe_steps / 100) * 10) + ((safe_duration / 60) * 5) %>
               <div class="log-exp">+<%= exp %> exp</div>
             </div>
           </div>
-
-          <% if walk.missions.count >= 3 %>
-            <div class="clear-stamp">CLEAR!</div>
-          <% end %>
         <% end %>
       <% end %>
     <% else %>
