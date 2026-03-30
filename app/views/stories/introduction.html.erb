@@ -4,9 +4,9 @@
 <div class="min-h-screen w-full flex flex-col items-center justify-center p-6 relative overflow-hidden">
   
   <div class="relative z-10 flex flex-col items-center animate-fade-in w-full max-w-lg">
-    <%# --- 🦊 狐さんエリア --- %>
-    <div class="w-64 h-64 md:w-80 md:h-80 flex items-center justify-center mb-6 animate-float">
-      <%= image_tag "いらすとや狐.png", class: "w-full h-full object-contain filter drop-shadow-2xl" %>
+    <%# --- キャラエリア --- %>
+    <div class="w-full h-[400px] md:h-[550px] flex items-center justify-center mb-6 animate-float">
+      <%= image_tag "characters/金宵_v1.png", class: "w-full h-full object-contain filter drop-shadow-2xl" %>
     </div>
 
     <%# --- 💬 セリフカード --- %>
@@ -14,8 +14,8 @@
       <div class="w-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] px-8 py-12 md:px-10 md:py-14 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/60 transition-all active:scale-95 active:bg-white/50">
         
         <%# セリフ表示エリア %>
-        <div id="dialogue-text" class="text-gray-800 leading-relaxed font-bold text-xl md:text-2xl text-center flex items-center justify-center min-h-[110px]">
-          「よく来たの。今日からお主も『まにまに散歩』の仲間入りじゃ。」
+        <div id="dialogue-text" class="text-gray-800 leading-relaxed font-black text-xl md:text-2xl text-center flex items-center justify-center min-h-[120px]">
+          ……驚かせてしまったか。ふふ、<br>いきなり目の前に現れたら無理もない。
         </div>
 
         <%# --- 右下のマーク（濃い緑） --- %>
@@ -36,17 +36,21 @@
 
 <script>
   (function() {
-    // セリフのリスト
+    // セリフのリスト（最後の一言は JS のロジックで出すので配列からは抜くのがスムーズです）
     const dialogues = [
-      "「よく来たの。今日からお主も『まにまに散歩』の仲間入りじゃ。」",
-      "「この世界には、歩くことでしか出会えぬ物語がたくさんある。」",
-      "「準備はよいか？さあ、お主だけの散歩へ出かけるとするかの！」"
+      "……驚かせてしまったか。ふふ、<br>いきなり目の前に現れたら無理もない。",
+      "俺の名は金宵（こよい）。一応、この土地を守る神様……だったんだがな。",
+      "今は力を失って、こんなちんまりした姿になってしまった。……困ったもんだ。",
+      "だが、お前の魂を見てピンときたんだ。<br>お前なら、俺を助けてくれそうだとな。",
+      "お前の散歩に、俺も一緒に<br>連れていってくれないか？"
     ];
 
     let currentIndex = 0;
+    let isWaiting = false; // ★定義を追加
 
-    // 次のセリフへ進む関数
     window.nextDialogue = function() {
+      if (isWaiting) return; // 演出待ちの間はクリック無効
+
       const textElement = document.getElementById("dialogue-text");
       const finishForm = document.getElementById("finish-form");
       
@@ -55,28 +59,41 @@
       currentIndex++;
 
       if (currentIndex < dialogues.length) {
-        // セリフを切り替える
+        // 通常の切り替え
         textElement.style.opacity = 0;
         setTimeout(() => {
-          textElement.innerText = dialogues[currentIndex];
+          textElement.innerHTML = dialogues[currentIndex];
           textElement.style.opacity = 1;
-        }, 150);
+        }, 200);
+
+      } else if (currentIndex === dialogues.length) {
+        // 💡 最後のお願いの後に「間」を空けて「ありがとう」を出す演出
+        isWaiting = true;
+        textElement.style.opacity = 0;
+
+        setTimeout(() => {
+          textElement.innerHTML = "……ありがとう。お前の見せる景色、<br>楽しみにしているぞ。";
+          textElement.style.opacity = 1;
+          isWaiting = false;
+        }, 400); 
+        
       } else {
-        // 全セリフ終了：フォームをPATCH送信する
-        if (finishForm) {
-          finishForm.submit();
-        }
+        // 「ありがとう」の後にクリックしたら遷移
+        if (finishForm) finishForm.submit();
       }
     };
 
-    // 画面遷移時にインデックスをリセット（ブラウザバック対策）
     document.addEventListener("turbo:load", () => { 
-      currentIndex = 0; 
+      currentIndex = 0;
+      isWaiting = false;
     });
   })();
 </script>
 
 <style>
+  /* 💡 透明度の変化を少しゆっくり(0.4s)にすると、より情緒が出る */
+  #dialogue-text { transition: opacity 0.4s ease-in-out; }
+
   /* フェード切り替え */
   #dialogue-text { transition: opacity 0.2s ease-in-out; }
 

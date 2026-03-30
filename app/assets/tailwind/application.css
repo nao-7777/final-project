@@ -4,3 +4,15 @@
 @source "/app/app/views/**/*.erb";
 @source "/app/app/helpers/**/*.rb";
 @source "/app/app/javascript/**/*.js";
+
+@utility char-silhouette {
+  filter: brightness(0);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+@utility char-locked-card {
+  background-color: #e5e7eb; /* bg-gray-200相当 */
+  opacity: 0.6;
+  filter: grayscale(100%);
+}

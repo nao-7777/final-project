@@ -1,29 +1,23 @@
 Rails.application.routes.draw do
-  # 1. ルートパス
   root 'top#index'
 
-  # 2. マイページ関連（ここを上に持ってくるのが一番安全）
-  get 'mypage',            to: 'mypage#show',       as: 'mypage'
-  get 'mypage/edit_name',  to: 'mypage#edit_name',  as: 'edit_mypage_name'
+  # 2. マイページ関連
+  get 'mypage', to: 'mypage#show', as: 'mypage'
+  get 'mypage/edit_name', to: 'mypage#edit_name', as: 'edit_mypage_name'
   get 'mypage/edit_email', to: 'mypage#edit_email', as: 'edit_mypage_email'
   patch 'mypage/update_name', to: 'mypage#update_name', as: 'update_mypage_name'
   patch 'mypage/update_email', to: 'mypage#update_email', as: 'update_mypage_email'
-  resources :walkings, only: [:new, :create]
 
-  # 3. デバイスの設定（ログアウトを確実に優先させる）
+  # 3. デバイスの設定
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     passwords: 'users/passwords'
   }
 
-  # 4. その他ユーザー関連（ログアウトと被らないように制限をかける）
-  # 💡 only: [...] を指定して、ログアウト(DELETE)と被る destroy などを除外する
   resources :users, only: [:index, :show, :edit, :update] 
 
-  # --- 以下、ストーリー関連など ---
   get 'welcome', to: 'stories#introduction', as: 'introduction'
   patch 'stories/finish', to: 'stories#finish', as: 'finish_story'
-  
   get 'signup_success', to: 'pages#signup_success'
   get 'password_reset_success', to: 'pages#password_reset_success'
 
@@ -33,15 +27,25 @@ Rails.application.routes.draw do
 
   # 5. お散歩・アルバム関連
   resources :walkings, only: [:index, :new, :create, :show, :update] do
+    # 💡 collectionを先に書く（ID判定より先にチェックさせる）
     collection do
       get :random_mission
-      post :upload_image
+    end
+
+    member do
+      patch :save_progress 
+      post :upload_image 
+      patch :complete_mission 
     end
   end
 
-  # アルバムへのショートカット用（お好みで）
   get 'album', to: 'walkings#index', as: 'album'
 
-  # お散歩の保存・詳細用 ---
-  resources :walks, only: [:update]
+  resources :walking_logs, only: [:index, :show] do
+    collection do
+      get 'date/:date', to: 'walking_logs#date_index', as: :date
+    end
+  end
+
+  resources :characters, only: [:index, :show]
 end

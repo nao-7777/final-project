@@ -1,16 +1,10 @@
-<div class="relative min-h-screen w-full flex flex-col items-center overflow-hidden" 
-     style="background: linear-gradient(180deg, #ffe2ea 30%, #97DBC1 90%);">
-  
-  <%# 背景の装飾 %>
-  <div class="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
-  <div class="absolute bottom-[-5%] left-[-5%] w-80 h-80 bg-[#65C7A4]/20 rounded-full blur-3xl"></div>
+<div class="relative min-h-screen w-full flex flex-col items-center overflow-hidden">
 
-  <%# 💡 style属性で直接マージンを指定します。ここなら確実に効きます %>
+  <%# プロフィールカード本体 %>
   <div class="w-full max-w-xs z-10" style="margin-top: 200px;">
-    <%# マイページ本体 %>
     <%= render "profile_card", user: @user %>
   </div>
 
-  <%# 編集用モーダル %>
-  <%= turbo_frame_tag "modal" %>
+  <%# 💡 ここが重要：常に空で待機し、ボタンが押された時だけ中身が流し込まれる %>
+  <%= turbo_frame_tag "modal", target: "_top" %>
 </div>

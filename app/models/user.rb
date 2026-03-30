@@ -1,39 +1,42 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  # belongs_to :user
   has_many :walks, dependent: :destroy
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
 
-  # 💡 追加：レベルに応じて画像名を返すメソッド
-  def fox_image_name
-    if level && level >= 10
-      "fox_stage2.png" # 進化後のファイル名
+  has_many :user_characters, dependent: :destroy
+  has_many :characters, through: :user_characters
+  
+  after_create :add_default_character
+
+  # 💡 ホーム画面で表示する狐の画像パスを返す
+  def current_fox_image
+    # ユーザーに紐づく最初のキャラクター（金宵）を取得
+    active_char = user_characters.first
+    
+    if active_char
+      # UserCharacterモデル側の判定ロジックを呼び出す
+      active_char.current_avatar_path
     else
-      "いらすとや狐.png" # 初期のファイル名
+      # 万が一キャラがいない時のフォールバック画像
+      "characters/koyoi_v1.png"
     end
   end
 
-  # 次のレベルまでに必要なEXPを計算
-  def required_exp_for_next_level
-    level * 500
-  end
+  private
 
-  # 経験値を加算し、レベルアップをチェックする
-  def gain_exp(amount)
-    # self.exp が nil の場合に備えて 0 をデフォルトにする
-    self.exp ||= 0
-    self.level ||= 1
+  # 新規登録時に「金宵」を自動でセット
+  def add_default_character
+    # 名前で検索（DBに金宵のデータが既にある前提）
+    first_char = Character.find_by("name LIKE ?", "%金宵%")
     
-    self.exp += amount
-    
-    # 経験値が溜まっている間、レベルを上げ続ける
-    while exp >= required_exp_for_next_level
-      self.exp -= required_exp_for_next_level
-      self.level += 1
+    if first_char
+      # 初期レベル1、初期キャラキー "金宵" で作成
+      self.user_characters.create(
+        character: first_char, 
+        level: 1, 
+        exp: 0, 
+        character_key: "金宵"
+      )
     end
-    
-    save!
   end
 end

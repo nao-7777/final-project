@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_03_24_024450) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_29_135850) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,12 +42,52 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_24_024450) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "characters", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.string "image_v1"
+    t.string "image_v2"
+    t.integer "rarity"
+    t.integer "evolution_level"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "description_v2"
+    t.integer "exp", default: 0
+    t.integer "level", default: 1
+  end
+
   create_table "missions", force: :cascade do |t|
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "requires_photo"
+    t.boolean "requires_photo", default: true
     t.integer "walk_id"
+  end
+
+  create_table "rails", force: :cascade do |t|
+    t.string "g"
+    t.string "model"
+    t.string "UserCharacter"
+    t.bigint "user_id", null: false
+    t.bigint "character_id", null: false
+    t.boolean "evolved"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_rails_on_character_id"
+    t.index ["user_id"], name: "index_rails_on_user_id"
+  end
+
+  create_table "user_characters", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "character_id", null: false
+    t.boolean "evolved"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "exp", default: 0
+    t.integer "level", default: 1
+    t.string "character_key"
+    t.index ["character_id"], name: "index_user_characters_on_character_id"
+    t.index ["user_id"], name: "index_user_characters_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -83,4 +123,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_24_024450) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "rails", "characters"
+  add_foreign_key "rails", "users"
+  add_foreign_key "user_characters", "characters"
+  add_foreign_key "user_characters", "users"
 end

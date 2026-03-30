@@ -15,23 +15,23 @@
       <span class="text-[12px] font-black tracking-tighter <%= is_home ? 'text-[#65C7A4]' : 'text-gray-500' %>">ホーム</span>
     <% end %>
 
-    <%# 2. 神社（ここを重点的に修正） %>
-    <div class="flex flex-col items-center justify-center transition-all opacity-60">
-      <div class="w-[70px] h-[70px] bg-white rounded-full flex items-center justify-center shadow-md mb-1.5">
-        <%# 💡 修正：textを28pxに下げ、mt-[2px]で物理的にガッツリ下げてど真ん中に見せています %>
-        <i class="fa-solid fa-torii-gate text-[27px] mt-[2px] text-[#65C7A4]"></i>
+    <%# 2. 神社（キャラクター図鑑へ） %>
+    <% is_characters = (controller_name == 'characters') %>
+    <%= link_to characters_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
+      <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_characters ? 'bg-[#65C7A4]' : 'bg-white' %>">
+        <i class="fa-solid fa-torii-gate text-[27px] mt-[2px] <%= is_characters ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
-      <span class="text-[12px] font-black tracking-tighter text-gray-500">神社</span>
-    </div>
+      <span class="text-[12px] font-black tracking-tighter <%= is_characters ? 'text-[#65C7A4]' : 'text-gray-500' %>">神社</span>
+    <% end %>
 
     <%# 3. 記録（でかく見えないように調整） %>
-    <div class="flex flex-col items-center justify-center transition-all opacity-60">
-      <div class="w-[70px] h-[70px] bg-white rounded-full flex items-center justify-center shadow-md mb-1.5">
-        <%# 💡 修正：線が太いアイコンなので、text-[28px]に下げて他とボリュームを合わせました %>
-        <i class="bi bi-journal-text text-[28px] leading-none text-[#65C7A4]"></i>
+    <% is_logs = (controller_name == 'walking_logs') %>
+    <%= link_to walking_logs_path, class: "flex flex-col items-center justify-center transition-all active:scale-90" do %>
+      <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center shadow-md mb-1.5 <%= is_logs ? 'bg-[#65C7A4]' : 'bg-white' %>">
+        <i class="bi bi-journal-text text-[28px] leading-none <%= is_logs ? 'text-white' : 'text-[#65C7A4]' %>"></i>
       </div>
-      <span class="text-[12px] font-black tracking-tighter text-gray-500">記録</span>
-    </div>
+      <span class="text-[12px] font-black tracking-tighter <%= is_logs ? 'text-[#65C7A4]' : 'text-gray-500' %>">記録</span>
+    <% end %>
 
     <%# 4. マイページ %>
     <% is_mypage = current_page?(mypage_path) %>

@@ -1,0 +1,177 @@
+<style>
+  /* --- 既存のスタイルはそのまま維持 --- */
+  .log-show-body {
+    background-color: transparent;
+    min-height: 100vh;
+    padding: 30px 15px 120px;
+    font-family: 'Hiragino Maru Gothic ProN', sans-serif;
+  }
+  .show-paper {
+    background: #fff;
+    max-width: 500px;
+    margin: 0 auto;
+    min-height: 80vh;
+    position: relative;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.1);
+    padding: 60px 30px 40px 70px;
+    background-image: radial-gradient(#dcdcdc 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .show-paper::before {
+    content: '';
+    position: absolute;
+    left: 25px; top: 0; bottom: 0; width: 30px;
+    background-image: radial-gradient(circle, #E2E2D0 7px, transparent 8.5px);
+    background-size: 30px 50px;
+  }
+  .show-date {
+    font-size: 20px;
+    font-weight: 900;
+    color: #444;
+    border-bottom: 3px double #EE8095;
+    margin-bottom: 25px;
+    display: inline-block;
+  }
+  .instax-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border: 1px solid #eee;
+  }
+  .masking-tape {
+    position: absolute;
+    top: -15px; left: 50%;
+    transform: translateX(-50%) rotate(2deg);
+    width: 100px; height: 30px;
+    background: rgba(101, 199, 164, 0.6);
+  }
+  .close-btn {
+    position: absolute;
+    top: 20px; right: 20px;
+    text-decoration: none;
+    color: #ccc;
+    font-size: 24px;
+    transition: color 0.2s;
+  }
+  .close-btn:hover { color: #888; }
+  .stats-row {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    border-top: 1px dashed #ccc;
+    padding-top: 20px;
+  }
+  .stat-item { text-align: center; }
+  .stat-val { font-size: 24px; font-weight: 900; color: #333; }
+  .stat-unit { font-size: 10px; color: #65C7A4; display: block; }
+
+  .instax-frame {
+    background: #f9f9f9;
+    padding: 10px 10px 25px 10px;
+    box-shadow: 3px 5px 15px rgba(0,0,0,0.15);
+    margin: 10px;
+    width: 160px;
+    position: relative;
+    cursor: zoom-in;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  #photo-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+  #modal-img {
+    max-width: 95%;
+    max-height: 95%;
+    object-fit: contain;
+    border: 10px solid white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+</style>
+
+<div class="log-show-body">
+  <div class="show-paper">
+    <%# nilガード %>
+    <% current_date = @walking_log.end_at&.to_date || Date.today %>
+    <%= link_to date_walking_logs_path(date: current_date), class: "close-btn" do %>
+      <i class="bi bi-x-lg"></i>
+    <% end %>
+
+    <div class="show-date">
+      <%= @walking_log.end_at&.strftime("%Y.%m.%d") || "日付なし" %>
+      <small style="font-size: 12px; margin-left: 10px; color: #999;">
+        <%= @walking_log.end_at&.strftime("%H:%M") || "--:--" %>のお散歩
+      </small>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 30px;">
+      <%# 💡 修正ポイント：画像が添付されているミッションだけを抽出 %>
+      <% photos = @walking_log.missions.select { |m| m.image.attached? } %>
+      
+      <% if photos.any? %>
+        <% photos.each_with_index do |mission, index| %>
+          <div class="instax-frame"
+               style="transform: rotate(<%= index.even? ? -3 : 3 %>deg);"
+               onclick="openModal('<%= url_for(mission.image) %>')">
+            <div class="masking-tape"></div>
+            <%= image_tag mission.image, class: "instax-image" %>
+            <p style="margin-top: 8px; font-size: 11px; color: #888; text-align: center; font-style: italic; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+              <%= strip_tags(mission.title) %>
+            </p>
+          </div>
+        <% end %>
+      <% else %>
+        <%# 💡 1枚も写真がないときだけ、このメッセージを出す %>
+        <div class="instax-frame" style="width: 85%; height: 200px; display: flex; align-items: center; justify-content: center; transform: rotate(0deg); cursor: default;">
+          <p style="color: #ccc; font-size: 12px;">思い出の写真はまだありません</p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-unit">STEPS</span>
+        <span class="stat-val"><%= number_with_delimiter(@walking_log.steps || 0) %></span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-unit">TIME</span>
+        <span class="stat-val"><%= (@walking_log.duration || 0) / 60 %></span><small>min</small>
+      </div>
+      <div class="stat-item">
+        <span class="stat-unit">EXP</span>
+        <%# 💡 EXP計算は「画像に関係なく全ての完了済みミッション」をカウントする場合 %>
+        <% all_missions_count = @walking_log.missions.count %>
+        <% safe_steps = @walking_log.steps || 0 %>
+        <% safe_duration = @walking_log.duration || 0 %>
+        <% exp = (all_missions_count * 50) + ((safe_steps / 100) * 10) + ((safe_duration / 60) * 5) %>
+        <span class="stat-val" style="color: #49B394;">+<%= exp %></span>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px; color: #666; font-size: 14px; line-height: 1.8; border-left: 4px solid #65C7A4; padding-left: 15px;">
+      今日もお疲れ様！<br>
+      この記録はノートに大切に保存されたよ。
+    </div>
+  </div>
+</div>
+
+<div id="photo-modal" onclick="this.style.display='none'">
+  <img id="modal-img" src="">
+</div>
+
+<script>
+  function openModal(url) {
+    if (!url) return;
+    const modal = document.getElementById('photo-modal');
+    const modalImg = document.getElementById('modal-img');
+    modalImg.src = url;
+    modal.style.display = 'flex';
+  }
+</script>

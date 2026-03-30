@@ -34,3 +34,31 @@ action_missions = [
 end
 
 puts "✅ 合計 #{Mission.count} 個のミッションを登録しました！"
+
+# キャラクターデータの登録
+Character.destroy_all
+
+# 金宵（こよい）くんの登録
+Character.create!(
+  name: "金宵 (こよい)",
+  description: "夜の静寂を好む、非常に知恵の回る子狐。主の歩みに合わせて無邪気に跳ねているように見えるが、実はその歩幅やリズムを微妙に狂わせて楽しむといった、いたずら好きな一面がある。物事の真理を悟ったような高い知性を備えているが、退屈を何よりも嫌う性分である。",
+  description_v2: "幾千の夜を越え、本来の威厳ある姿を取り戻した妖狐。その瞳には過去と未来のすべてが映ると伝承されている。姿は雅に変化したが、主をからかって反応を見ることを好むお茶目な気質は変わっていない。主がミッションに奔走する姿を、扇で口元を隠しながら密かに観察している。",
+  image_v1: "characters/金宵_v1.png", # 💡 app/assets/images/characters/ に入れるファイル名
+  image_v2: "characters/金宵_v2.png", # 💡 進化後のファイル名
+  rarity: 5,
+  evolution_level: 10        # 💡 前回のロジックに合わせて「10」に設定
+)
+
+# 開発用：自分自身に最初から金宵くんを付与しておく（テスト用）
+UserCharacter.destroy_all
+user = User.first # 最初のユーザーを取得
+if user
+  kinyo = Character.find_by(name: "金宵 (こよい)")
+  UserCharacter.create!(
+    user: user, 
+    character: kinyo, 
+    evolved: user.level >= 10 # 既にレベル10以上なら進化済み状態で付与
+  )
+end
+
+puts "✅ ミッションとキャラクター（金宵）を登録しました！"
