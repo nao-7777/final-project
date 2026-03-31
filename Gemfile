@@ -81,5 +81,10 @@ gem "devise"
 gem "kaminari"
 
 group :development do
-  gem 'letter_opener_web' # これを追記
+  gem 'letter_opener_web'
 end
+
+# Rails 7 / Ruby 3.1以降でメール送信に必須なGem
+gem "net-imap", require: false
+gem "net-pop", require: false
+gem "net-smtp", require: false

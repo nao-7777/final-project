@@ -295,6 +295,9 @@ DEPENDENCIES
   jsbundling-rails
   kaminari
   letter_opener_web
+  net-imap
+  net-pop
+  net-smtp
   pg
   puma (>= 5.0)
   rails (~> 7.0.10)
