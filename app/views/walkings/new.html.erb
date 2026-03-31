@@ -1,3 +1,4 @@
+<%# app/views/walkings/new.html.erb %>
 <% content_for :no_nav, true %>
 <% content_for :is_walking_mode, true %>
 
@@ -25,8 +26,13 @@
 
 <script>
   (function() {
+    // すでにイベントが登録されている場合はスキップ
+    if (window.isWalkingNewLoaded) return;
+
     let isSensorInitialized = false;
-    window.addEventListener('click', (e) => {
+    
+    // イベントリスナーを変数に定義（後で掃除するため）
+    window.initializeSensorOnClick = (e) => {
       // ボタンやリンクをクリックした時はスルー
       if (e.target.closest('#btn-camera-container,#walking-mission-card,#walking-header-container,#btn-album,#btn-map,button,a')) return;
       
@@ -38,6 +44,15 @@
         isSensorInitialized = true; 
         console.log("Sensor initialized by user interaction.");
       }
-    });
+    };
+
+    window.addEventListener('click', window.initializeSensorOnClick);
+    window.isWalkingNewLoaded = true;
+
+    // ページ遷移時にイベントリスナーを削除（掃除）
+    document.addEventListener("turbo:before-visit", () => {
+      window.removeEventListener('click', window.initializeSensorOnClick);
+      window.isWalkingNewLoaded = false;
+    }, { once: true });
   })();
 </script>

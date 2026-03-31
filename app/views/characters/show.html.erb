@@ -13,6 +13,7 @@
       <h1 class="char-name"><%= @character.name %></h1>
     </div>
 
+    <%# --- メインカード（画像） --- %>
     <div class="char-main-card">
       <div class="card-scroll-wrapper" id="cardWrapper_<%= @character.id %>">
         <div class="card-item">
@@ -71,6 +72,7 @@
       </div>
     </div>
 
+    <%# --- ステータスパネル --- %>
     <% current_exp = @user_character&.exp || 0 %>
     <% next_cap = current_lv * 500 %>
     <% progress = (current_exp.to_f / next_cap * 100).clamp(0, 100) %>
@@ -90,91 +92,124 @@
       <div class="st-right">
         <div class="love-label" style="color: #ffffff !important; font-size: 10px; font-weight: bold; margin-bottom: 3px; text-align: right;">親愛度</div>
         <div class="stars">
-          <%# 星の表示ロジックを元のまま固定 %>
           <i class="bi bi-star-fill active"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
         </div>
       </div>
     </div>
 
+    <%# --- 説明文パネル --- %>
     <div class="description-panel">
-      <div class="card-scroll-wrapper" id="descWrapper_<%= @character.id %>" style="height: auto; min-height: 120px; overflow-y: hidden;">
-        <div class="card-item" style="padding: 20px 24px; align-items: flex-start; min-width: 100%;">
+      <div class="card-scroll-wrapper" id="descWrapper_<%= @character.id %>" style="height: auto; min-height: 90px;">
+        <div class="card-item" style="padding: 15px 24px 5px; align-items: flex-start; min-width: 100%; height: auto;">
           <div class="description-section" style="width: 100%;">
-            <h3 style="font-size: 11px; color: #65C7A4; margin-bottom: 5px; font-weight: 800;">[ 形態 I ]</h3>
+            <h3 style="font-size: 12px; color: #2D7A5E; margin-bottom: 3px; font-weight: 800;">[ 形態 I ]</h3>
             <p class="intro-text"><%= @character.description %></p>
           </div>
         </div>
+        <div class="card-item" style="padding: 15px 24px 5px; align-items: flex-start; min-width: 100%; height: auto;">
+          <div class="description-section" style="width: 100%;">
+            <h3 style="font-size: 12px; color: #2D7A5E; margin-bottom: 3px; font-weight: 800;">[ 形態 II ]</h3>
+            <% if current_lv >= 10 %>
+              <p class="intro-text"><%= @character.description_v2 || "進化した姿。より強力な力を得た。" %></p>
+            <% else %>
+              <p class="intro-text" style="opacity: 0.5;">Lv.10に到達すると解放されます。</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="dots" id="descDotContainer_<%= @character.id %>" style="margin: 0 auto 8px; justify-content: center;">
+        <span class="dot active"></span>
+        <span class="dot"></span>
       </div>
     </div>
   </div>
 </div>
 
 <style>
-/* --- ボトムナビと既存ナビの完全非表示 --- */
 [class*="bottom_nav"], nav, .fixed.bottom-2, footer { display: none !important; }
-
-/* --- 背景透過のための親要素設定 --- */
 body, main { background: transparent !important; }
 
 .char-detail-fullpage {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 2000 !important;
-  background: transparent !important; 
-  display: flex;
-  flex-direction: column;
-  padding: 15px 24px 50px;
-  box-sizing: border-box;
-  overflow: hidden;
+  position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 2000 !important;
+  background: transparent !important; display: flex; flex-direction: column;
+  padding: 15px 24px 50px; box-sizing: border-box; overflow: hidden;
 }
 
-.char-container {
-  width: 100%; max-width: 420px; height: 100%; margin: 0 auto;
-  display: flex; flex-direction: column; gap: 10px;
-  position: relative;
-}
-
-.close-btn {
-  position: absolute; top: 15px; right: 24px;
-  width: 42px; height: 42px; background: white;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; color: #333; text-decoration: none;
-}
-
+.char-container { width: 100%; max-width: 420px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; position: relative; }
+.close-btn { position: absolute; top: 15px; right: 24px; width: 42px; height: 42px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; color: #333; text-decoration: none; }
 .char-header { display: flex; align-items: center; gap: 10px; padding-top: 10px; flex-shrink: 0; }
 .char-no { background: #38423B; color: #fff; font-size: 10px; padding: 3px 10px; border-radius: 4px; font-weight: bold; }
 .char-name { font-size: 1.8rem; font-weight: 900; margin: 0; color: #333; }
 
-.char-main-card {
-  background: white; border-radius: 28px; padding: 15px; box-shadow: 0 12px 40px rgba(0,0,0,0.06);
-  flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;
+.char-main-card { 
+  background: white; border-radius: 28px; padding: 15px; box-shadow: 0 12px 40px rgba(0,0,0,0.06); 
+  flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+  overflow: hidden; 
 }
 
-.card-scroll-wrapper {
-  display: flex; width: 100%; height: 100%; overflow-x: auto;
-  scroll-snap-type: x mandatory; scrollbar-width: none;
-}
+.card-scroll-wrapper { display: flex; width: 100%; height: 100%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .card-scroll-wrapper::-webkit-scrollbar { display: none; }
-.card-item { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; align-items: center; justify-content: center; }
 
-.img-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-.char-img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.card-item { min-width: 100%; height: 100%; scroll-snap-align: center; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.img-wrapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+.char-img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
-.status-panel {
-  background: rgba(94, 104, 97, 0.95); border-radius: 22px; padding: 15px 24px;
-  display: flex; justify-content: space-between; align-items: center; color: #fff; flex-shrink: 0;
-}
+.bust-up-mode { transform: scale(4.5) translateY(-2%); transform-origin: center top; object-position: top; }
+.toggle-view-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(56, 66, 59, 0.8); color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; z-index: 50; backdrop-filter: blur(4px); }
+
+.status-panel { background: rgba(94, 104, 97, 0.95); border-radius: 22px; padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; color: #fff; flex-shrink: 0; }
 .st-left { display: flex; align-items: center; gap: 20px; flex-grow: 1; }
 .lv-box span { font-size: 28px; font-weight: 900; display: block; line-height: 1; }
 .stars { font-size: 14px; margin-top: 5px; color: rgba(255,255,255,0.3); }
 .stars i.active { color: #EE8095 !important; }
 
-.description-panel { background: rgba(235, 230, 215, 0.7); border-radius: 22px; flex-shrink: 0; }
-.intro-text { font-size: 0.92rem; line-height: 1.7; color: #444; margin: 0; text-align: left; }
+.description-panel { 
+  background: rgba(235, 230, 215, 0.7); 
+  border-radius: 22px; 
+  flex-shrink: 0; 
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.intro-text { font-size: 0.92rem; line-height: 1.6; color: #444; margin: 0; text-align: left; }
 
-.dots { margin-top: 10px; display: flex; gap: 10px; flex-shrink: 0; }
-.dot { width: 9px; height: 9px; background: rgba(101, 199, 164, 0.2); border-radius: 50%; }
+.dots { margin-top: 5px; display: flex; gap: 10px; flex-shrink: 0; }
+.dot { width: 9px; height: 9px; background: rgba(101, 199, 164, 0.2); border-radius: 50%; transition: all 0.3s; }
 .dot.active { background: #65C7A4; transform: scale(1.2); }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const updateDots = (wrapper, container) => {
+    if (!wrapper || !container) return;
+    const dots = container.querySelectorAll('.dot');
+    const index = Math.round(wrapper.scrollLeft / wrapper.clientWidth);
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === index);
+    });
+  };
+
+  const cardWrapper = document.getElementById('cardWrapper_<%= @character.id %>');
+  const cardDots = document.getElementById('dotContainer_<%= @character.id %>');
+  if (cardWrapper) {
+    cardWrapper.addEventListener('scroll', () => updateDots(cardWrapper, cardDots));
+  }
+
+  const descWrapper = document.getElementById('descWrapper_<%= @character.id %>');
+  const descDots = document.getElementById('descDotContainer_<%= @character.id %>');
+  if (descWrapper) {
+    descWrapper.addEventListener('scroll', () => updateDots(descWrapper, descDots));
+  }
+
+  const toggleBtn = document.getElementById('viewToggleBtn_<%= @character.id %>');
+  const v2Image = document.getElementById('v2Image_<%= @character.id %>');
+  if (toggleBtn && v2Image) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isBustUp = v2Image.classList.contains('bust-up-mode');
+      v2Image.classList.toggle('bust-up-mode', !isBustUp);
+      toggleBtn.innerHTML = isBustUp ? '<i class="bi bi-arrows-angle-expand"></i> 全身を見る' : '<i class="bi bi-arrows-angle-contract"></i> 顔を見る';
+    });
+  }
+});
+</script>

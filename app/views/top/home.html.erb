@@ -6,7 +6,8 @@
 <% is_v2 = current_lv >= 10 %>
 
 <%# 進化後だけ位置やサイズを変えるためのクラス設定 %>
-<% koyoi_transform_class = is_v2 ? "w-[300%] max-w-none -translate-y-20" : "w-screen max-w-[500px]" %>
+<%# 任意値 [ ] を使うのが一番確実です %>
+<% koyoi_transform_class = is_v2 ? "w-[250%] max-w-none -translate-y-[60px]" : "w-screen max-w-[500px]" %>
 
 <%# --- 全体：fixed inset-0 と touch-none で物理的に画面をロックする --- %>
 <div class="fixed inset-0 h-screen w-full flex flex-col items-center p-6 pb-24 overflow-hidden touch-none">
@@ -18,8 +19,7 @@
     </div>
   </div>
 
-  <%# --- 2. メインキャラ（背面・巨大） --- %>
-  <%# 100vw を 100% または w-screen に整理し、はみ出しによるスクロールを抑止 %>
+  <%# --- 2. メインキャラ --- %>
   <div class="absolute top-[20%] left-1/2 -translate-x-1/2 <%= koyoi_transform_class %> h-auto z-0 pointer-events-none flex justify-center transition-all duration-500">
     <div class="relative w-full h-full flex justify-center">
       <%= image_tag current_user.current_koyoi_image, class: "w-full h-auto object-contain filter drop-shadow-xl" %>

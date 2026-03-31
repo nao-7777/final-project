@@ -34,7 +34,6 @@
 
     btn.dataset.loading = "true";
     if (window.createParticles) window.createParticles(btn);
-    if (window.jumpkoyoi) window.jumpkoyoi();
 
     const walkId = document.body.dataset.walkId || "<%= @walk&.id %>";
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -56,14 +55,19 @@
         method: method, headers: { 'Accept': 'application/json', 'X-CSRF-Token': token }, body: formData
       });
       const data = await res.json();
+
       if (data.status === 'success' || data.image_url) {
+        // 通信成功後に控えめに跳ねる
+        if (window.jumpKoyoi) window.jumpKoyoi();
+        
         if (data.image_url && window.addPhotoToAlbum) window.addPhotoToAlbum(data.image_url, mt.innerText);
+        
         setTimeout(() => {
           if (data.next_mission) { mt.innerHTML = data.next_mission.title; mt.dataset.missionId = data.next_mission.id; }
           btn.dataset.loading = "false";
           document.getElementById('photo-preview-container').style.display = 'none';
           fileInput.value = "";
-          if (window.showKoyoiTalk) showKoyoiTalk(window.getQuote('clear'));
+          if (window.showKoyoiTalk) window.showKoyoiTalk(window.getQuote('clear'));
         }, 400);
       }
     } catch (e) { btn.dataset.loading = "false"; }
@@ -76,20 +80,14 @@
     if (data && mt) {
       mt.innerHTML = data.title || "写真を撮ってクリアしよう！";
       mt.dataset.missionId = data.id;
-      if (window.showFoxTalk) showFoxTalk(window.getQuote('skip'));
+      // セリフ表示
+      if (window.showKoyoiTalk) window.showKoyoiTalk(window.getQuote('skip'));
     }
     document.getElementById('photo-preview-container').style.display = 'none';
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    // ミッション初期化
     const mt = document.getElementById('mission-text');
     if (mt && (!mt.dataset.missionId || mt.dataset.missionId === "null")) skipMission();
-
-    // アルバム初期化
-    const album = document.getElementById('photo-album-content');
-    if (album && document.body.dataset.photoCount === "0") {
-      album.innerHTML = '<p id="no-photo-msg" class="text-center text-gray-400 py-10">まだ写真がありません</p>';
-    }
   });
 </script>

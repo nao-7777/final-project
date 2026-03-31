@@ -1,14 +1,22 @@
-<%# 今連れているキャラクターのデータを取得 %>
-<% active_char = current_user.user_characters.first %>
-<%# データがない場合の初期値設定 %>
-<% current_lv = active_char&.level || 1 %>
-<% current_exp = active_char&.exp || 0 %>
-<% current_limit = active_char ? active_char.required_exp_for_next_level : 500 %>
-<% percent = (current_exp.to_f / current_limit * 100).clamp(0, 100) %>
+<%# app/views/layouts/_header.html.erb %>
+<% active_char = current_user.user_characters.includes(:character).first %>
+
+<% if active_char %>
+  <% current_lv = active_char.level %>
+  <% current_exp = active_char.exp %>
+  <%# 次のレベルまでの必要経験値を計算（モデルの重いメソッドを避けるため直接計算） %>
+  <% current_limit = current_lv * 500 %>
+  <% percent = (current_exp.to_f / current_limit * 100).clamp(0, 100) %>
+  <% char_name = active_char.character.name %>
+<% else %>
+  <% current_lv = 1 %>
+  <% percent = 0 %>
+  <% char_name = "フォックス" %>
+<% end %>
 
 <div class="flex flex-col gap-2.5 p-5 font-sans select-none">
   <div class="flex items-center gap-3">
-    <%# --- LEVELの丸（正円を維持） --- %>
+    <%# --- LEVELの丸 --- %>
     <div class="w-[60px] h-[60px] bg-[#65C7A4] text-white flex flex-col items-center justify-center rounded-full shadow-sm p-4 border-b-4 border-[#54a88a] shrink-0 relative overflow-hidden">
       <div class="absolute top-1 left-2 w-8 h-4 bg-white/20 rounded-full blur-[1px] -rotate-15"></div>
       
@@ -21,7 +29,7 @@
     <%# --- キャラクターの名前 --- %>
     <div class="mb-1">
       <span class="text-[#4C6496] font-black text-xl tracking-tighter italic">
-        <%= active_char&.character&.name || "フォックス" %> 
+        <%= char_name %> 
       </span>
     </div>
   </div>

@@ -1,31 +1,15 @@
-<% content_for :no_nav, true %>
-<% content_for :is_walking_mode, true %>
-
-<div 
-  data-controller="walking-mode"
-  data-walking-mode-walk-id-value="<%= @walk.id %>"
-  data-walking-mode-initial-steps-value="<%= @walk.steps || 0 %>"
-  data-walking-mode-initial-duration-value="<%= @walk.duration || 0 %>"
-  style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; overflow: hidden; pointer-events: none;">
-  
-  <%# --- ヘッダー --- %>
-  <%= render 'walkings/shared/header/walking_header' %>
-  
-  <%# --- お題カード --- %>
-  <%= render 'walkings/shared/missions/walking_mission' %>
-
-  <%# --- キャラクター表示 --- %>
-  <%= render 'walkings/shared/walking_character' %>
-</div>
-
-<%# --- お散歩モードのボトムナビ --- %>
-<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none;">
-  <%= render 'walkings/shared/walking_footer' %>
-</div>
-
 <script>
   (function() {
     const initializeWalkHeader = () => {
+      // 起動時にボタンや表示要素があるか確認し、なければ待つ（読み込み順エラー回避）
+      const timerEl = document.getElementById('display-timer');
+      const stepsEl = document.getElementById('display-steps');
+      const stopBtn = document.getElementById('btn-finish-walking-trigger');
+      if (!timerEl || !stepsEl || !stopBtn) {
+        setTimeout(initializeWalkHeader, 100);
+        return;
+      }
+
       const walkId = <%= @walk.id %>;
       const storageKey = `walk_data_${walkId}`;
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -35,9 +19,6 @@
       let totalSeconds = savedData.duration !== undefined ? savedData.duration : <%= @walk.duration || 0 %>;
 
       window.steps = currentSteps;
-
-      const timerEl = document.getElementById('display-timer');
-      const stepsEl = document.getElementById('display-steps');
 
       function reflectDisplay() {
         if (stepsEl) stepsEl.innerText = currentSteps.toLocaleString();
@@ -94,7 +75,6 @@
         }
       };
 
-      // 【修正箇所】タップで歩数を増やすのをやめ、最初のタップでセンサーを起動するだけに
       const startSensorOnce = () => {
         window.requestSensorPermission();
         document.removeEventListener('click', startSensorOnce);
@@ -112,7 +92,6 @@
       }, 10000);
 
       // ボタンの取得とイベント登録
-      const stopBtn = document.getElementById('btn-finish-walking-trigger');
       if (stopBtn) {
         stopBtn.onclick = async (e) => {
           e.preventDefault();
@@ -132,7 +111,6 @@
         };
       }
 
-      // ページを離れるときにタイマーを掃除
       document.addEventListener("turbo:before-visit", () => {
         clearInterval(timerInterval);
         clearInterval(autoSaveInterval);
@@ -140,5 +118,7 @@
     };
 
     document.addEventListener('turbo:load', initializeWalkHeader);
+    // 直接実行も試みる（リトライロジックで安全に実行される）
+    initializeWalkHeader();
   })();
 </script>
