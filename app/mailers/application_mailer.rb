@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'no-reply@manimanisanpo.onrender.com'
-  layout 'mailer'
+  default from: "まにまに散歩 <onboarding@resend.dev>"
+  layout "mailer"
 end

@@ -3,10 +3,10 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   config.cache_classes = true
   config.eager_load = true
-  config.consider_all_requests_local = true
+  config.consider_all_requests_local = false
   config.action_controller.perform_caching = true
   config.public_file_server.enabled = ENV["RAILS_SERVE_STATIC_FILES"].present? || true
-  config.assets.compile = true
+  config.assets.compile = false
   config.active_storage.service = :local
   config.log_level = :debug
   config.log_tags = [ :request_id ]
@@ -23,20 +23,21 @@ Rails.application.configure do
 
   config.active_record.dump_schema_after_migration = false
 
-  # --- メール設定（修正版） ---
+  # --- メール設定（Resend版） ---
   config.action_mailer.default_url_options = { host: 'manimanisanpo.onrender.com', protocol: 'https' }
+  
+  # 送信方法を Gmail から SMTP (Resend) に変更
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   
-  # 送信エラーが起きてもサーバーを落とさない（status 1 対策）
-  config.action_mailer.raise_delivery_errors = false
+  # エラーでサーバーが止まらないようにしつつ、原因はログに出す
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.smtp_settings = {
-    address:              'smtp.gmail.com',
+    address:              'smtp.resend.com',
     port:                 587,
-    domain:               'gmail.com',
-    user_name:            ENV['GMAIL_CH_USER'],
-    password:             ENV['GMAIL_CH_PASSWORD'],
+    user_name:            'resend', # ここは「resend」という文字列固定でOK
+    password:             ENV['RESEND_API_KEY'], # Renderに設定した APIキー
     authentication:       'plain',
     enable_starttls_auto: true
   }
