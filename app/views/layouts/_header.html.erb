@@ -6,15 +6,14 @@
 <% current_limit = active_char ? active_char.required_exp_for_next_level : 500 %>
 <% percent = (current_exp.to_f / current_limit * 100).clamp(0, 100) %>
 
-<div class="flex flex-col gap-3 p-6 font-sans select-none">
+<div class="flex flex-col gap-2.5 p-5 font-sans select-none">
   <div class="flex items-center gap-3">
-    <%# --- LEVELの丸 --- %>
-    <div class="w-16 h-16 bg-[#65C7A4] text-white flex flex-col items-center justify-center rounded-full shadow-sm p-4 border-b-4 border-[#54a88a] shrink-0 relative overflow-hidden">
+    <%# --- LEVELの丸（正円を維持） --- %>
+    <div class="w-[60px] h-[60px] bg-[#65C7A4] text-white flex flex-col items-center justify-center rounded-full shadow-sm p-4 border-b-4 border-[#54a88a] shrink-0 relative overflow-hidden">
       <div class="absolute top-1 left-2 w-8 h-4 bg-white/20 rounded-full blur-[1px] -rotate-15"></div>
       
       <span class="text-[9px] font-black leading-none mb-0.5 tracking-tighter opacity-90">LEVEL</span>
-      <span class="text-3xl font-black leading-none drop-shadow-sm">
-        <%# キャラクターのレベルを表示 %>
+      <span class="text-2xl font-black leading-none drop-shadow-sm">
         <%= current_lv %>
       </span>
     </div>
@@ -22,7 +21,6 @@
     <%# --- キャラクターの名前 --- %>
     <div class="mb-1">
       <span class="text-[#4C6496] font-black text-xl tracking-tighter italic">
-        <%# キャラクター名を表示（characterモデルのnameを参照） %>
         <%= active_char&.character&.name || "フォックス" %> 
       </span>
     </div>
@@ -30,8 +28,7 @@
   
   <%# --- 経験値バー --- %>
   <div class="relative -mt-1">
-    <div class="w-50 h-3.5 bg-white/60 rounded-full overflow-hidden border-2 border-white shadow-sm relative">
-      <%# 進行度(percent)に合わせてバーが伸びる %>
+    <div class="w-48 h-3 bg-white/60 rounded-full overflow-hidden border-2 border-white shadow-sm relative">
       <div class="bg-gradient-to-r from-[#65C7A4] to-[#AEEAD3] h-full rounded-full shadow-inner transition-all duration-500" 
            style="width: <%= percent %>%;">
       </div>
@@ -40,7 +37,7 @@
 
   <%# --- 親愛度 --- %>
   <div class="relative mt-0.5">
-    <div class="bg-white/95 backdrop-blur-md px-5 py-2 rounded-full shadow-md border border-white w-fit flex items-center gap-2">
+    <div class="bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow-md border border-white w-fit flex items-center gap-2">
       <span class="text-[#F18499] text-sm font-black">親愛度</span>
       <span class="text-[#F18499] text-sm tracking-[0.2em] font-bold">★☆☆☆☆</span>
     </div>

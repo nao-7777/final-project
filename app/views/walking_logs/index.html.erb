@@ -1,30 +1,45 @@
 <%= render layout: 'notebook_layout', locals: { title: "お散歩記録" } do %>
-  <% if @dates.any? %>
-    <% @dates.each do |data| %>
-      <%= link_to date_walking_logs_path(date: data[:date]), class: "log-item" do %>
-        <span class="log-date-label">
-          <%= data[:date].strftime("%Y / %m / %d") %>
-        </span>
-        
-        <div class="log-main-row">
-          <div class="log-steps">
-            <%= number_with_delimiter(data[:total_steps]) %><small>steps (Total)</small>
-          </div>
+  <%# スクロールエリアの開始 %>
+  <div class="log-scroll-container" style="height: calc(100vh - 200px); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px;">
+    <% if @dates.any? %>
+      <% @dates.each do |data| %>
+        <%= link_to date_walking_logs_path(date: data[:date]), class: "log-item", style: "display: block;" do %>
+          <span class="log-date-label">
+            <%= data[:date].strftime("%Y / %m / %d") %>
+          </span>
           
-          <div class="log-info-right">
-            <div class="log-duration">
-              <%= data[:total_duration] / 60 %> min
+          <div class="log-main-row">
+            <div class="log-steps">
+              <%= number_with_delimiter(data[:total_steps]) %><small>steps (Total)</small>
             </div>
-            <div class="log-exp" style="font-size: 11px;">
-              タップして詳細を表示
+            
+            <div class="log-info-right">
+              <div class="log-duration">
+                <%= data[:total_duration] / 60 %> min
+              </div>
+              <div class="log-exp" style="font-size: 11px;">
+                タップして詳細を表示
+              </div>
             </div>
           </div>
-        </div>
+        <% end %>
       <% end %>
+    <% else %>
+      <div class="no-data-msg">
+        <p>まだ記録がありません。</p>
+      </div>
     <% end %>
-  <% else %>
-    <div class="no-data-msg">
-      <p>まだ記録がありません。</p>
-    </div>
-  <% end %>
+  </div>
+  <%# スクロールエリアの終了 %>
 <% end %>
+
+<style>
+  /* スクロールバーを非表示にする場合（お好みで） */
+  .log-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  .log-scroll-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

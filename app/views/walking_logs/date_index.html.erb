@@ -1,42 +1,68 @@
 <% title_text = "#{@target_date&.strftime('%Y / %m / %d') || '日付不明'} の記録" %>
 
 <%= render layout: 'notebook_layout', locals: { title: title_text } do %>
-  <% if @walking_logs && @walking_logs.any? %>
-    <% @walking_logs.each do |walk| %>
-      <%= link_to walking_log_path(walk), class: "log-item" do %>
-        <span class="log-date-label">
-          <%= walk.end_at&.strftime("%H:%M") || "--:--" %> 開始
-        </span>
-        
-        <div class="log-main-row">
-          <div class="log-steps">
-            <i class="bi bi-person-walking"></i>
-            <%= number_with_delimiter(walk.steps || 0) %><small>steps</small>
-          </div>
-          
-          <div class="log-info-right">
-            <% safe_duration = walk.duration || 0 %>
-            <% safe_steps = walk.steps || 0 %>
-            <div class="log-duration">
-              <%= (safe_duration / 60) %> min
-            </div>
-            
-            <%# 経験値計算 %>
-            <% exp = (walk.missions.count * 50) + ((safe_steps / 100) * 10) + ((safe_duration / 60) * 5) %>
-            <div class="log-exp">+<%= exp %> exp</div>
-          </div>
-        </div>
-      <% end %>
-    <% end %>
-  <% else %>
-    <div class="no-data-msg">
-      <p>この日の記録はありません。</p>
-    </div>
+  
+  <%# --- バツボタン --- %>
+  <%= link_to walking_logs_path, 
+      style: "position: absolute; top: 18px; right: 20px; width: 32px; height: 32px; 
+              background: #f5f5f5; border-radius: 50%; display: flex; align-items: center; 
+              justify-content: center; color: #999; text-decoration: none; z-index: 100;
+              border: 1px solid #eee;" do %>
+    <i class="bi bi-x-lg" style="font-size: 14px;"></i>
   <% end %>
 
-  <%# 下部の戻るリンク %>
-  <%= link_to walking_logs_path, 
-      style: "display: block; text-align: center; margin-top: 40px; color: #aaa; text-decoration: none; font-size: 13px;" do %>
-    <i class="bi bi-arrow-left"></i> 日付一覧に戻る
-  <% end %>
+  <%# --- スクロールエリア開始 --- %>
+  <div class="log-scroll-container" style="height: calc(100vh - 220px); overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: 15px; padding: 0 5px;">
+    <% if @walking_logs && @walking_logs.any? %>
+      <% @walking_logs.each do |walk| %>
+        <%= link_to walking_log_path(walk), class: "log-item", style: "display: block;" do %>
+          <span class="log-date-label">
+            <%= walk.end_at&.strftime("%H:%M") || "--:--" %> 開始
+          </span>
+          
+          <div class="log-main-row">
+            <div class="log-steps">
+              <i class="bi bi-person-walking"></i>
+              <%= number_with_delimiter(walk.steps || 0) %><small>steps</small>
+            </div>
+            
+            <div class="log-info-right">
+              <% safe_duration = walk.duration || 0 %>
+              <% safe_steps = walk.steps || 0 %>
+              <div class="log-duration">
+                <%= (safe_duration / 60) %> min
+              </div>
+              
+              <%# 経験値計算 %>
+              <% exp = (walk.missions.count * 50) + ((safe_steps / 100) * 10) + ((safe_duration / 60) * 5) %>
+              <div class="log-exp">+<%= exp %> exp</div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% else %>
+      <div class="no-data-msg">
+        <p>この日の記録はありません。</p>
+      </div>
+    <% end %>
+  </div>
+  <%# --- スクロールエリア終了 --- %>
+
 <% end %>
+
+<style>
+  /* スクロールバー非表示設定 */
+  .log-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  .log-scroll-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* タイトルがバツボタンと被らないように調整 */
+  .notebook-title {
+    padding-right: 45px;
+    word-break: break-all;
+  }
+</style>

@@ -26,11 +26,12 @@
     </div>
   </div>
 
-  <%# --- 3. お散歩ボタン（前面・位置固定） --- %>
-  <%# mt-auto で下寄せにし、絶対位置ではなく Flexbox の中で位置を確定させる %>
-  <div class="mt-auto w-full max-w-[240px] mb-18 z-40 pointer-events-auto">
+  <%# --- 3. お散歩ボタン --- %>
+  <div style="position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 240px; z-index: 50; pointer-events: auto;">
     <%= link_to new_walking_path, class: "group relative flex items-center justify-center w-full" do %>
       <div class="absolute inset-0 bg-[#F28FA3] rounded-full blur-lg opacity-40 group-active:blur-md transition-all"></div>
+      
+      <%# ボタン本体（デザインそのまま） %>
       <div class="relative w-full bg-[#F28FA3] text-white text-2xl font-black py-6 rounded-full shadow-lg border-b-8 border-[#B55D6F] flex items-center justify-center gap-2 transition-transform active:translate-y-1 active:border-b-0">
         <span>お散歩する</span>
       </div>

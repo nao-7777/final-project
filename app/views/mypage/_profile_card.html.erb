@@ -6,15 +6,16 @@
       マイページ
     </h1>
 
-    <div class="space-y-6">
+    <div class="space-y-8">
       <%# --- 名前セクション --- %>
-      <div class="flex items-center justify-between">
-        <div class="flex flex-col text-left">
-          <span class="text-xs font-bold text-gray-500 uppercase">NAME</span>
-          <span class="text-lg font-black text-gray-700"><%= user.name %></span>
-        </div>
+      <div class="relative pr-16 flex flex-col text-left">
+        <span class="text-xs font-bold text-gray-500 uppercase">NAME</span>
+        <%# truncate を削除し、break-all で長い英数字も強制改行させます %>
+        <span class="text-lg font-black text-gray-700 break-all leading-tight pr-2">
+          <%= user.name %>
+        </span>
         <%= link_to '変更', edit_mypage_name_path, data: { turbo_frame: "modal" }, 
-            class: "bg-white border-2 border-[#65C7A4] text-[#65C7A4] text-xs font-black px-4 py-1 rounded-lg shadow-sm active:scale-95 transition-all" %>
+            class: "absolute top-0 right-0 bg-white border-2 border-[#65C7A4] text-[#65C7A4] text-xs font-black px-4 py-1 rounded-lg shadow-sm active:scale-95 transition-all whitespace-nowrap" %>
       </div>
 
       <%# --- IDセクション --- %>
@@ -26,17 +27,18 @@
       </div>
 
       <%# --- メールセクション --- %>
-      <div class="flex items-center justify-between">
-        <div class="flex flex-col text-left overflow-hidden">
-          <span class="text-xs font-bold text-gray-500 uppercase">EMAIL</span>
-          <span class="text-lg font-black text-gray-700 truncate"><%= user.email %></span>
-        </div>
+      <div class="relative pr-16 flex flex-col text-left">
+        <span class="text-xs font-bold text-gray-500 uppercase">EMAIL</span>
+        <%# break-all を入れることで、長いメアドも枠内で折り返して全部表示します %>
+        <span class="text-lg font-black text-gray-700 break-all leading-tight pr-2">
+          <%= user.email %>
+        </span>
         <%= link_to '変更', edit_mypage_email_path, data: { turbo_frame: "modal" }, 
-            class: "bg-white border-2 border-[#65C7A4] text-[#65C7A4] text-xs font-black px-4 py-1 rounded-lg shadow-sm active:scale-95 transition-all" %>
+            class: "absolute top-0 right-0 bg-white border-2 border-[#65C7A4] text-[#65C7A4] text-xs font-black px-4 py-1 rounded-lg shadow-sm active:scale-95 transition-all whitespace-nowrap" %>
       </div>
     </div>
 
-    <%# --- 下部セクション --- %>
+    <%# --- 下部セクション（変更なし） --- %>
     <div class="mt-12 flex flex-col items-center gap-3">
       <%= link_to "ログアウト", destroy_user_session_path, 
           data: { turbo_method: :delete, turbo: "false" }, 

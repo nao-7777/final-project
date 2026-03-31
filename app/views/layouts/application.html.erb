@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<%# 1. htmlに直接グラデを塗ることでSafari下部の隙間を物理的に消滅させます %>
-<html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow: hidden;
-                       background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat;
-                       background-size: 100% 100%;
-                       background-attachment: fixed;">
+<html lang="ja" style="height: 100dvh; margin: 0; padding: 0; background-color: #F5F5F0;">
   <head>
     <title>ManimaniSanpo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#F5F5F0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#F5F5F0" media="(prefers-color-scheme: dark)">
+
     <%= csp_meta_tag %>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -16,16 +18,26 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <%# 2. bodyは透明にし、htmlの背景を透過させて隙間を埋めます %>
-  <body style="margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; touch-action: none; background: transparent;">
+  <body style="margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; touch-action: none; background: transparent;">
 
-    <%# 3. 麻の葉レイヤー：不透明度の指定(opacity)を完全に削除。画像そのままを表示します %>
-    <div style="position: fixed; top: -50px; left: 0; width: 100vw; height: calc(100vh + 100px); z-index: 0; pointer-events: none;
+    <%# --- 【最背面】グラデーション壁 --- %>
+    <div style="position: fixed; top: -100px; left: 0; width: 100vw; height: calc(100dvh + 200px); 
+                z-index: -2; 
+                background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat;
+                background-size: 100% 100%;">
+    </div>
+
+    <%# --- 【背面】麻の葉レイヤー --- %>
+    <div style="position: fixed; top: -100px; left: 0; width: 100vw; height: calc(100dvh + 200px); 
+                z-index: -1; pointer-events: none;
                 background-image: url('<%= asset_path('asanoha.png') %>');
                 background-size: 650px auto;
                 background-repeat: repeat;
+                opacity: 0.4;
                 image-rendering: -webkit-optimize-contrast;">
     </div>
 

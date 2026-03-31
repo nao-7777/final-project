@@ -9,15 +9,15 @@
   .btn-mission-clear { transition: transform 0.1s; user-select: none; }
   .btn-mission-clear:active { transform: scale(0.9); }
   #walking-mission-card {
-    position: fixed; top: 200px; left: 50%; width: 88%; max-width: 380px; 
+    position: fixed; top: 160px; left: 50%; width: 88%; max-width: 360px; 
     transform: translateX(-50%); background: rgba(255, 255, 252, 0.97); 
-    backdrop-filter: blur(10px); padding: 30px 25px 20px 25px; 
+    backdrop-filter: blur(10px); padding: 20px 20px 15px 20px; 
     border-radius: 2.5rem; box-shadow: 0 15px 40px rgba(60, 100, 80, 0.15); 
     border: 2px solid #ffffff; pointer-events: auto; z-index: 100;
   }
   #photo-preview-container {
-    display: none; position: absolute; top: 215px; left: 15px; 
-    width: 90px; height: 90px; background: white; padding: 6px; 
+    display: none; position: absolute; bottom: -70px; left: 10px; 
+    width: 80px; height: 80px; background: white; padding: 5px; 
     border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
     transform: rotate(-10deg); z-index: 110;
   }
@@ -36,14 +36,17 @@
     <img id="photo-preview" src="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
   </div>
   <div style="text-align: center;">
-    <div style="font-size: 1.4rem; font-weight: 900; color: #EE8095; margin-bottom: 15px;">お題</div>
+    <div style="font-size: 1.1rem; font-weight: 900; color: #EE8095; margin-bottom: 8px;">お題</div>
     <div id="mission-text" data-mission-id="<%= @current_mission&.id %>" 
-         style="font-weight: 800; color: #555; font-size: 1.2rem; margin-bottom: 20px; min-height: 3em; display: flex; align-items: center; justify-content: center; text-align: center;">
+         style="font-weight: 800; color: #555; font-size: 1.1rem; margin-bottom: 12px; min-height: 2.4em; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3;">
       <%= (@current_mission&.title || "写真を撮ってクリアしよう！").html_safe %>
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-      <button type="button" onclick="skipMission(event)" style="flex: 0 0 80px; height: 35px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 12px; cursor: pointer;">SKIP</button>
-      <button type="button" id="btn-complete" class="btn-mission-clear" onclick="completeMission(event)" style="flex: 0 0 120px; height: 45px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 16px; cursor: pointer;">クリア！</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+      <%# セリフ表示のみ実行 %>
+      <button type="button" onclick="if(window.showKoyoiTalk){ window.showKoyoiTalk(window.getQuote('skip')); } skipMission(event);" 
+              style="flex: 0 0 75px; height: 32px; background: white; color: #EE8095; border: 3px solid #EE8095; border-radius: 99px; font-weight: 800; font-size: 11px; cursor: pointer;">SKIP</button>
+      <button type="button" id="btn-complete" class="btn-mission-clear" onclick="completeMission(event)" 
+              style="flex: 0 0 110px; height: 42px; background: #65C7A4; color: white; border: 3px solid white; border-radius: 99px; font-weight: 900; font-size: 15px; cursor: pointer;">クリア！</button>
     </div>
   </div>
 </div>
