@@ -10,7 +10,6 @@
       <%# --- 名前セクション --- %>
       <div class="relative pr-16 flex flex-col text-left">
         <span class="text-xs font-bold text-gray-500 uppercase">NAME</span>
-        <%# truncate を削除し、break-all で長い英数字も強制改行させます %>
         <span class="text-lg font-black text-gray-700 break-all leading-tight pr-2">
           <%= user.name %>
         </span>
@@ -29,7 +28,7 @@
       <%# --- メールセクション --- %>
       <div class="relative pr-16 flex flex-col text-left">
         <span class="text-xs font-bold text-gray-500 uppercase">EMAIL</span>
-        <%# break-all を入れることで、長いメアドも枠内で折り返して全部表示します %>
+        <%# break-all を入れることで、長いメアドも枠内で折り返して全部表示 %>
         <span class="text-lg font-black text-gray-700 break-all leading-tight pr-2">
           <%= user.email %>
         </span>
@@ -38,7 +37,7 @@
       </div>
     </div>
 
-    <%# --- 下部セクション（変更なし） --- %>
+    <%# --- 下部セクション --- %>
     <div class="mt-12 flex flex-col items-center gap-3">
       <%= link_to "ログアウト", destroy_user_session_path, 
           data: { turbo_method: :delete, turbo: "false" }, 

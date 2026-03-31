@@ -24,17 +24,13 @@
 </div>
 
 <script>
-  // 他の JS ファイルが window.jumpKoyoi を上書きしている可能性を潰すため
-  // 念のため古い関数を一旦消去してから再定義します
   window.jumpKoyoi = null;
   window.jumpKoyoi = function() {
     const img = document.getElementById('koyoi-image');
     if (!img) return;
 
-    // ★ ここで「遅延」と「高さ」を管理
-    // クリアボタンを押してから 300ms（0.3秒）後に跳ねる設定です
     setTimeout(() => {
-      img.style.transform = "translateY(-10px)"; // ここを変えれば高さも変わる
+      img.style.transform = "translateY(-10px)";
       
       setTimeout(() => { 
         img.style.transform = "translateY(0)"; 
