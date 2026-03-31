@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow: hidden;">
+<%# 1. htmlに直接グラデを塗ることでSafari下部の隙間を物理的に消滅させます %>
+<html lang="ja" style="height: 100%; margin: 0; padding: 0; overflow: hidden;
+                       background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat;
+                       background-size: 100% 100%;
+                       background-attachment: fixed;">
   <head>
     <title>ManimaniSanpo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -14,18 +18,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   </head>
 
-  <%# --- body 自体にグラデを塗ることで「隙間」を完全に殺す --- %>
-  <body style="margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; touch-action: none;
-               background: linear-gradient(to bottom, #F5F5F0 0%, #F5F5F0 35%, #A4D5BD 100%) no-repeat;
-               background-size: 100% 100%;">
+  <%# 2. bodyは透明にし、htmlの背景を透過させて隙間を埋めます %>
+  <body style="margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; touch-action: none; background: transparent;">
 
-    <%# --- 麻の葉レイヤー：以前の「薄さ」を再現するために opacity を 0.08 に設定 --- %>
-    <%# position: fixed で top: -50px にすることで、iPhoneのバーの隙間も埋めます %>
+    <%# 3. 麻の葉レイヤー：不透明度の指定(opacity)を完全に削除。画像そのままを表示します %>
     <div style="position: fixed; top: -50px; left: 0; width: 100vw; height: calc(100vh + 100px); z-index: 0; pointer-events: none;
                 background-image: url('<%= asset_path('asanoha.png') %>');
                 background-size: 650px auto;
                 background-repeat: repeat;
-                opacity: 0.08;
                 image-rendering: -webkit-optimize-contrast;">
     </div>
 
@@ -55,5 +55,26 @@
     <% end %>
 
     <%= turbo_frame_tag "modal" %>
+
+    <% if flash[:sent_modal] %>
+      <script>
+        const showSentModal = () => {
+          Swal.fire({
+            title: 'メールを送信しました！',
+            html: 'パスワード再設定用のメールを送信しました。',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            didOpen: () => {
+              const btn = Swal.getConfirmButton();
+              btn.style.cssText = "background-color:#65C7A4; color:#fff; border-radius:9999px; padding:12px 60px; font-weight:bold; border:none;";
+            }
+          });
+          document.removeEventListener("turbo:load", showSentModal);
+        };
+        document.addEventListener("turbo:load", showSentModal);
+      </script>
+      <% flash.delete(:sent_modal) %>
+    <% end %>
   </body>
 </html>
