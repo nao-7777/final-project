@@ -23,22 +23,21 @@ Rails.application.configure do
 
   config.active_record.dump_schema_after_migration = false
 
-  # --- メール設定（Resend版） ---
+  # --- メール設定（Resend版・接続強化設定） ---
   config.action_mailer.default_url_options = { host: 'manimanisanpo.onrender.com', protocol: 'https' }
-  
-  # 送信方法を Gmail から SMTP (Resend) に変更
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   
-  # エラーでサーバーが止まらないようにしつつ、原因はログに出す
+  # エラー内容をログにしっかり出すために true にします
   config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.smtp_settings = {
     address:              'smtp.resend.com',
-    port:                 587,
-    user_name:            'resend', # ここは「resend」という文字列固定でOK
-    password:             ENV['RESEND_API_KEY'], # Renderに設定した APIキー
+    port:                 465,        # 587で弾かれる対策として、より強固な465に変更
+    user_name:            'resend',
+    password:             ENV['RESEND_API_KEY'],
     authentication:       'plain',
-    enable_starttls_auto: true
+    tls:                  true,       # 465番ポートを使う場合は true にする必要があります
+    enable_starttls_auto: false
   }
 end
