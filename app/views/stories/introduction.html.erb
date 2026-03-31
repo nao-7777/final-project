@@ -57,29 +57,25 @@
       
       if (!textElement) return;
 
-      currentIndex++;
+      // 1. まずフェードアウト（今の動きのまま）
+      textElement.style.opacity = 0;
 
-      if (currentIndex < dialogues.length) {
-        textElement.style.opacity = 0;
-        setTimeout(() => {
+      // 2. 完全に消えたタイミング（0.2s）で中身を入れ替える
+      setTimeout(() => {
+        currentIndex++;
+
+        if (currentIndex < dialogues.length) {
           textElement.innerHTML = dialogues[currentIndex];
-          textElement.style.opacity = 1;
-        }, 200);
-
-      } else if (currentIndex === dialogues.length) {
-        isWaiting = true;
-        textElement.style.opacity = 0;
-
-        setTimeout(() => {
-          // 演出用テキストからも <br> を削除
+          textElement.style.opacity = 1; // フェードイン
+        } else if (currentIndex === dialogues.length) {
+          isWaiting = true;
           textElement.innerHTML = "……ありがとう。お前の見せる<br class='md:hidden'>景色、楽しみにしているぞ。";
           textElement.style.opacity = 1;
           isWaiting = false;
-        }, 400); 
-        
-      } else {
-        if (finishForm) finishForm.submit();
-      }
+        } else {
+          if (finishForm) finishForm.submit();
+        }
+      }, 200); // 遷移時間 0.2s と一致させています
     };
 
     document.addEventListener("turbo:load", () => { 
