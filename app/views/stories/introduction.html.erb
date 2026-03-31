@@ -35,51 +35,48 @@
 
 <script>
   (function() {
-    // セリフのリスト
+    // 外側を " 、クラス名を ' で統一しました
     const dialogues = [
-      "……驚かせてしまったか。ふふ、<br class='md:hidden'>いきなり目の前に現れたら<br class='md:hidden'>無理もない。",
+      "……驚かせてしまったか。ふふ、いきなり目の前に現れたら<br class='md:hidden'>無理もない。",
       "俺の名は金宵（こよい）。一応、この土地を守る神様<br class='md:hidden'>……だったんだがな。",
       "今は力を失って、こんなちんまりした姿になってしまった。<br class='md:hidden'>……困ったもんだ。",
-      "だが、お前の魂を見て<br class='md:hidden'>ピンときたんだ。お前なら、<br class='md:hidden'>俺を助くれそうだとな。",
+      "だが、お前の魂を見て<br class='md:hidden'>ピンときたんだ。お前なら、<br class='md:hidden'>俺を助けてくれそうだとな。",
       "お前の散歩に、俺も一緒に<br class='md:hidden'>連れていってくれないか？"
     ];
 
     let currentIndex = 0;
-    let isWaiting = false; // 演出待ちフラグ
+    let isWaiting = false;
 
     window.nextDialogue = function() {
-      if (isWaiting) return; // 演出待ちの間はクリック無効
+      if (isWaiting) return;
 
       const textElement = document.getElementById("dialogue-text");
       const finishForm = document.getElementById("finish-form");
       
       if (!textElement) return;
 
-      currentIndex++;
+      isWaiting = true;
 
-      if (currentIndex < dialogues.length) {
-        // 通常の切り替え
-        textElement.style.opacity = 0;
-        setTimeout(() => {
+      // 1. フェードアウト
+      textElement.style.opacity = 0;
+
+      // 2. 0.2秒後に切り替え
+      setTimeout(() => {
+        textElement.innerHTML = ""; // 前の文字をクリア
+        currentIndex++;
+
+        if (currentIndex < dialogues.length) {
           textElement.innerHTML = dialogues[currentIndex];
           textElement.style.opacity = 1;
-        }, 200);
-
-      } else if (currentIndex === dialogues.length) {
-        // 最後のお願いの後に「間」を空けて「ありがとう」を出す演出
-        isWaiting = true;
-        textElement.style.opacity = 0;
-
-        setTimeout(() => {
+          isWaiting = false;
+        } else if (currentIndex === dialogues.length) {
           textElement.innerHTML = "……ありがとう。お前の見せる<br class='md:hidden'>景色、楽しみにしているぞ。";
           textElement.style.opacity = 1;
           isWaiting = false;
-        }, 400); 
-        
-      } else {
-        // 「ありがとう」の後にクリックしたら遷移
-        if (finishForm) finishForm.submit();
-      }
+        } else {
+          if (finishForm) finishForm.submit();
+        }
+      }, 200); 
     };
 
     document.addEventListener("turbo:load", () => { 
