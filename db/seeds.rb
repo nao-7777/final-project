@@ -57,7 +57,7 @@ if user
   UserCharacter.create!(
     user: user, 
     character: kinyo, 
-    evolved: user.level >= 10 # 既にレベル10以上なら進化済み状態で付与
+    evolved: false
   )
 end
 
