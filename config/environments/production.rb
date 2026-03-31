@@ -92,7 +92,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.hosts << "manimanisanpo.onrender.com"
+  # config.hosts << "manimanisanpo.onrender.com"
   
   config.action_mailer.default_url_options = { host: 'manimanisanpo.onrender.com', protocol: 'https' }
   config.action_mailer.delivery_method = :smtp
