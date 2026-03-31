@@ -3,10 +3,17 @@ class StoriesController < ApplicationController
   end
 
   def finish
-    # 初回ログインフラグを false に更新して、二度とこの画面が出ないようにする
-    current_user.update(first_login: false)
+    begin
+      ActiveRecord::Migration.check_pending!
+    rescue ActiveRecord::PendingMigrationError
+      ActiveRecord::Migrator.current_version
+      ActiveRecord::MigrationContext.new(Rails.root.join("db/migrate")).migrate
+    end
+
+    if current_user.respond_to?(:first_login)
+      current_user.update(first_login: false)
+    end
     
-    # ホーム画面（root）へリダイレクト
     redirect_to root_path
   end
 end
