@@ -12,9 +12,11 @@
     <div id="story-card" class="relative w-full max-w-[440px] cursor-pointer" onclick="window.nextDialogue()">
       <div class="w-full bg-white/40 backdrop-blur-xl rounded-[2.5rem] px-8 py-12 md:px-10 md:py-14 shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/60 transition-all active:scale-95 active:bg-white/50">
         
-        <%# セリフ表示エリア %>
-        <div id="dialogue-text" class="text-gray-800 leading-relaxed font-black text-xl md:text-2xl text-center flex items-center justify-center min-h-[120px]">
-          ……驚かせてしまったか。ふふ、<br>いきなり目の前に現れたら無理もない。
+        <%# セリフ表示エリア：デザイン・余白は変えず、auto-phraseで文節改行を最適化 %>
+        <div id="dialogue-text" 
+             class="text-gray-800 leading-relaxed font-black text-xl md:text-2xl text-center flex items-center justify-center min-h-[120px]"
+             style="word-break: auto-phrase; letter-spacing: -0.02em;">
+          ……驚かせてしまったか。ふふ、いきなり目の前に現れたら無理もない。
         </div>
 
         <%# --- 右下のマーク --- %>
@@ -26,7 +28,7 @@
     </div>
   </div>
 
-  <%# --- エラー回避用の隠しフォーム（PATCH送信を確実にする） --- %>
+  <%# --- エラー回避用の隠しフォーム --- %>
   <div class="hidden">
     <%= form_with url: finish_story_path, method: :patch, id: 'finish-form', local: true do %>
     <% end %>
@@ -35,20 +37,20 @@
 
 <script>
   (function() {
-    // セリフのリスト
+    // セリフのリスト：<br>をすべて削除し、ブラウザの自動判別に任せます
     const dialogues = [
-      "……驚かせてしまったか。ふふ、<br>いきなり目の前に現れたら無理もない。",
+      "……驚かせてしまったか。ふふ、いきなり目の前に現れたら無理もない。",
       "俺の名は金宵（こよい）。一応、この土地を守る神様……だったんだがな。",
       "今は力を失って、こんなちんまりした姿になってしまった。……困ったもんだ。",
-      "だが、お前の魂を見てピンときたんだ。<br>お前なら、俺を助けてくれそうだとな。",
-      "お前の散歩に、俺も一緒に<br>連れていってくれないか？"
+      "だが、お前の魂を見てピンときたんだ。お前なら、俺を助けてくれそうだとな。",
+      "お前の散歩に、俺も一緒に連れていってくれないか？"
     ];
 
     let currentIndex = 0;
-    let isWaiting = false; // 演出待ちフラグ
+    let isWaiting = false;
 
     window.nextDialogue = function() {
-      if (isWaiting) return; // 演出待ちの間はクリック無効
+      if (isWaiting) return;
 
       const textElement = document.getElementById("dialogue-text");
       const finishForm = document.getElementById("finish-form");
@@ -58,7 +60,6 @@
       currentIndex++;
 
       if (currentIndex < dialogues.length) {
-        // 通常の切り替え
         textElement.style.opacity = 0;
         setTimeout(() => {
           textElement.innerHTML = dialogues[currentIndex];
@@ -66,18 +67,17 @@
         }, 200);
 
       } else if (currentIndex === dialogues.length) {
-        // 最後のお願いの後に「間」を空けて「ありがとう」を出す演出
         isWaiting = true;
         textElement.style.opacity = 0;
 
         setTimeout(() => {
-          textElement.innerHTML = "……ありがとう。お前の見せる景色、<br>楽しみにしているぞ。";
+          // 演出用テキストからも <br> を削除
+          textElement.innerHTML = "……ありがとう。お前の見せる景色、楽しみにしているぞ。";
           textElement.style.opacity = 1;
           isWaiting = false;
         }, 400); 
         
       } else {
-        // 「ありがとう」の後にクリックしたら遷移
         if (finishForm) finishForm.submit();
       }
     };
@@ -90,8 +90,6 @@
 </script>
 
 <style>
-  #dialogue-text { transition: opacity 0.4s ease-in-out; }
-
   /* フェード切り替え */
   #dialogue-text { transition: opacity 0.2s ease-in-out; }
 
