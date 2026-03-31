@@ -52,8 +52,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_29_135850) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "description_v2"
-    t.integer "exp", default: 0
-    t.integer "level", default: 1
   end
 
   create_table "missions", force: :cascade do |t|
@@ -104,8 +102,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_29_135850) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
-    t.integer "exp", default: 0
-    t.integer "level", default: 1
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
