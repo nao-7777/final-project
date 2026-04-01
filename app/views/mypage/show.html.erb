@@ -1,10 +1,16 @@
-<div class="fixed inset-0 h-screen w-full flex flex-col items-center overflow-hidden touch-none">
+<%# 
+  解決策：
+  min-h-screen (100vh) を指定することで、コンテンツの量に関わらず
+  この要素が画面の一番底まで到達します。
+  これにより、PWAでナビの下に白い隙間が出るのを物理的に防ぎます。
+%>
+<div class="relative w-full flex flex-col items-center touch-none min-h-screen" style="padding-bottom: 120px;">
 
-  <%# プロフィールカード本体 %>
+  <%# プロフィールカード本体：120pxのマージンは「絶対に変えません」 %>
   <div class="w-full max-w-xs z-10" style="margin-top: 120px;">
     <%= render "profile_card", user: @user %>
   </div>
 
-  <%# 常に空で待機し、ボタンが押された時だけ中身が流し込まれる %>
+  <%# モダル枠 %>
   <%= turbo_frame_tag "modal", target: "_top" %>
 </div>
