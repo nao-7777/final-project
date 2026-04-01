@@ -1,13 +1,15 @@
-<div class="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center bg-gradient-to-b from-[#ffe2ea] via-[#ffe2ea] via-20% to-[#97DBC1]">
+<%# 1. pt-32 で上を広く空け、pb-12 で下の余白を確保。これで位置が少し下がります %>
+<div class="min-h-[100dvh] w-full flex flex-col items-center justify-start pt-32 pb-12 bg-gradient-to-b from-[#ffe2ea] via-[#ffe2ea] via-20% to-[#97DBC1] bg-fixed px-6">
   
-  <div class="w-full max-w-md px-4">
+  <%# 2. 横幅を 350px に広げてバランスを調整 %>
+  <div class="w-full max-w-[350px] z-10">
 
-    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-lg border border-none backdrop-blur-sm"
-     style="background-color: rgba(255, 255, 255, 0.7);">
+    <div class="bg-white/70 p-8 rounded-[2.5rem] shadow-xl backdrop-blur-md"
+         style="background-color: rgba(255, 255, 255, 0.75);">
       
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">新しいパスワードの設定</h2>
+      <h2 class="text-2xl font-black text-center text-gray-800 mb-3 tracking-tighter">パスワード設定</h2>
       
-      <p class="text-sm text-gray-500 text-center mb-10 leading-relaxed">
+      <p class="text-[12px] text-gray-500 text-center mb-8 leading-relaxed font-bold">
         新しく使用するパスワードを<br>入力してください。
       </p>
 
@@ -16,33 +18,34 @@
         <%= f.hidden_field :reset_password_token %>
 
         <%# 新しいパスワード %>
-        <div class="mb-6">
-          <%= f.label :password, "新しいパスワード", class: "block text-sm font-bold text-gray-600 mb-2" %>
-          <% if @minimum_password_length %>
-            <p class="text-[10px] text-gray-400 mb-1">(<%= @minimum_password_length %>文字以上)</p>
-          <% end %>
+        <div class="mb-5">
+          <div class="flex justify-between items-center mb-2 ml-1">
+            <%= f.label :password, "新しいパスワード", class: "text-sm font-bold text-gray-600" %>
+            <% if @minimum_password_length %>
+              <span class="text-[10px] text-gray-400 font-normal">(<%= @minimum_password_length %>文字〜)</span>
+            <% end %>
+          </div>
           <%= f.password_field :password, autofocus: true, autocomplete: "new-password", placeholder: "6文字以上で入力",
-              class: "w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#65C7A4]/50 focus:border-[#65C7A4] shadow-inner" %>
+              class: "w-full px-5 py-3 border border-gray-200 rounded-2xl text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#65C7A4]/50 shadow-inner text-sm transition-all" %>
         </div>
 
         <%# パスワード確認用 %>
         <div class="mb-10">
-          <%= f.label :password_confirmation, "新しいパスワード（確認用）", class: "block text-sm font-bold text-gray-600 mb-2" %>
+          <%= f.label :password_confirmation, "新しいパスワード（確認用）", class: "block text-sm font-bold text-gray-600 mb-2 ml-1" %>
           <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "もう一度入力してください",
-              class: "w-full px-5 py-3 border border-gray-300 rounded-lg text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#65C7A4]/50 focus:border-[#65C7A4] shadow-inner" %>
+              class: "w-full px-5 py-3 border border-gray-200 rounded-2xl text-gray-800 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#65C7A4]/50 shadow-inner text-sm transition-all" %>
         </div>
 
         <%# 更新ボタン %>
-        <div class="text-center mb-8">
+        <div class="text-center mb-4">
           <%= f.submit "パスワードを更新する", 
-              class: "w-full px-10 py-3 text-white font-bold text-lg rounded-full transition-all hover:opacity-90 hover:shadow-lg shadow-md cursor-pointer",
+              class: "w-full py-3.5 text-white font-black text-lg rounded-full transition-all hover:opacity-90 shadow-md cursor-pointer",
               style: "background-color: #65C7A4;" %>
         </div>
 
       <% end %>
 
-      <%# 境界線 %>
-      <div class="border-t border-gray-200 mb-8"></div>
+      <div class="border-t border-gray-100 my-8"></div>
 
       <%# ログインリンク %>
       <div class="text-center">

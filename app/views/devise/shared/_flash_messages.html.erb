@@ -1,7 +1,30 @@
 <% flash.each do |key, value| %>
   <% next if key == "sent_modal" %>
-  <div class="mb-6 p-4 text-sm font-bold text-center rounded-[1.5rem] shadow-sm border
-    <%= key == 'notice' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-red-50 text-red-600 border-red-100' %>">
-    <%= value %>
+  
+  <%# h-0 で場所を確保せず、下の要素を押し下げない %>
+  <div class="relative h-0 overflow-visible z-50 flash-container">
+    
+    <%# 1. absolute top-8 でタイトルのすぐ下に配置 %>
+    <%# 2. 影(shadow-md)を少し強めて、入力欄と重なっても読みやすくしました %>
+    <div class="absolute top-8 left-0 right-0 p-2.5 text-[11px] font-bold text-center rounded-2xl shadow-md border transition-all duration-700 flash-content
+      <%= key == 'notice' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-red-50 text-red-600 border-red-100' %>">
+      <%= value %>
+    </div>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const messages = document.querySelectorAll('.flash-content');
+    messages.forEach(msg => {
+      setTimeout(() => {
+        // 3. 透明度を下げつつ、下方向(translateY)にスライドして消す
+        msg.style.opacity = '0';
+        msg.style.transform = 'translateY(10px)'; 
+        msg.style.pointerEvents = 'none';
+        
+        setTimeout(() => msg.closest('.flash-container')?.remove(), 700);
+      }, 3000); 
+    });
+  });
+</script>

@@ -5,11 +5,12 @@
 <%# 進化後（Lv.10以上）かどうかの判定 %>
 <% is_v2 = current_lv >= 10 %>
 
-<%# 進化後だけ位置やサイズを変えるためのクラス設定 %>
-<%# 任意値 [ ] を使うのが一番確実です %>
-<% koyoi_transform_class = is_v2 ? "w-[250%] max-w-none -translate-y-[60px]" : "w-screen max-w-[500px]" %>
+<%# --- スマホ用の数値は一切変えず、md:（PC用）の設定を追加 --- %>
+<% koyoi_transform_class = is_v2 ? 
+    "w-[250%] max-w-none md:max-w-[800px] -translate-y-[60px] md:top-[10%]" : 
+    "w-screen max-w-[500px] md:max-w-[450px] md:top-[15%]" %>
 
-<%# --- 全体：fixed inset-0 と touch-none で物理的に画面をロックする --- %>
+<%# --- 全体 --- %>
 <div class="fixed inset-0 h-screen w-full flex flex-col items-center p-6 pb-24 overflow-hidden touch-none">
   
   <%# --- 1. 左上のステータスエリア --- %>
@@ -22,7 +23,8 @@
   <%# --- 2. メインキャラ --- %>
   <div class="absolute top-[20%] left-1/2 -translate-x-1/2 <%= koyoi_transform_class %> h-auto z-0 pointer-events-none flex justify-center transition-all duration-500">
     <div class="relative w-full h-full flex justify-center">
-      <%= image_tag current_user.current_koyoi_image, class: "w-full h-auto object-contain filter drop-shadow-xl" %>
+      <%# PCでの見切れを防ぐために、画像自体にも md:max-h だけ追加 %>
+      <%= image_tag current_user.current_koyoi_image, class: "w-full h-auto object-contain filter drop-shadow-xl md:max-h-[80vh]" %>
     </div>
   </div>
 
