@@ -14,41 +14,39 @@ Rails.application.routes.draw do
     passwords: 'users/passwords'
   }
 
-  resources :users, only: [:index, :show, :edit, :update] 
+  resources :users, only: %i[index show edit update]
 
   get 'welcome', to: 'stories#introduction', as: 'introduction'
   patch 'stories/finish', to: 'stories#finish', as: 'finish_story'
   get 'signup_success', to: 'pages#signup_success'
   get 'password_reset_success', to: 'pages#password_reset_success'
 
-  if Rails.env.development?
-    mount LetterOpenerWeb::Engine, at: "/letter_opener"
-  end
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
   # 5. お散歩・アルバム関連
-  resources :walkings, only: [:index, :new, :create, :show, :update] do
+  resources :walkings, only: %i[index new create show update] do
     collection do
       get :random_mission
       get :evolve
     end
 
     member do
-      patch :save_progress 
-      post :upload_image 
-      patch :complete_mission 
+      patch :save_progress
+      post :upload_image
+      patch :complete_mission
     end
   end
 
   get 'album', to: 'walkings#index', as: 'album'
 
-  resources :walking_logs, only: [:index, :show] do
+  resources :walking_logs, only: %i[index show] do
     collection do
       get 'date/:date', to: 'walking_logs#date_index', as: :date
     end
   end
 
   # 6. キャラクター関連
-  resources :characters, only: [:index, :show] do
+  resources :characters, only: %i[index show] do
     member do
       post :confirm_evolution
     end

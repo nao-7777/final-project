@@ -1,0 +1,40 @@
+# require ではなく plugins に書き換えて警告を消す
+plugins:
+  - rubocop-rails
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'vendor/**/*'
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'bin/*'
+    - 'node_modules/**/*'
+    - 'config/environments/*'
+
+# 日本語メッセージを許可（Rails/I18nLocaleTexts を無効化）
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# メソッドの長さ制限を 10行から 25行に緩和
+Metrics/MethodLength:
+  Max: 25
+
+# コードの複雑さ（AbcSize）を 17から 30に緩和
+Metrics/AbcSize:
+  Max: 30
+
+# 循環的複雑度を 7から 10に緩和
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+# ルーティングファイルの長さを無視
+Metrics/BlockLength:
+  Exclude:
+    - 'config/routes.rb'
+
+# frozen_string_literal を不要にする
+Style/FrozenStringLiteralComment:
+  Enabled: false

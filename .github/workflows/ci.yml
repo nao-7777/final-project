@@ -1,0 +1,44 @@
+name: "Ruby on Rails CI"
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    container:
+      image: ruby:3.2.2 # ご自身の使用しているRubyバージョンに合わせてください
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: "postgres://postgres:password@db:5432/test_db"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update -qq && apt-get install -y libpq-dev nodejs
+          bundle install
+
+      - name: Database setup
+        run: |
+          bin/rails db:prepare
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+      - name: Run RSpec
+        run: bundle exec rspec

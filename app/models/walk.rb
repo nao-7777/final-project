@@ -1,4 +1,4 @@
 class Walk < ApplicationRecord
   belongs_to :user
-  has_many :missions, foreign_key: :walk_id
+  has_many :missions, dependent: :destroy
 end

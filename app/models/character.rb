@@ -4,6 +4,7 @@ class Character < ApplicationRecord
 
   def owned_by?(user)
     return false unless user
+
     user_characters.exists?(user_id: user.id)
   end
 end
