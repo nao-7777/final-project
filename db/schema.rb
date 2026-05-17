@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_04_08_084629) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_17_092108) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,19 +62,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_04_08_084629) do
     t.integer "walk_id"
   end
 
-  create_table "rails", force: :cascade do |t|
-    t.string "g"
-    t.string "model"
-    t.string "UserCharacter"
-    t.bigint "user_id", null: false
-    t.bigint "character_id", null: false
-    t.boolean "evolved"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["character_id"], name: "index_rails_on_character_id"
-    t.index ["user_id"], name: "index_rails_on_user_id"
-  end
-
   create_table "user_characters", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "character_id", null: false
@@ -121,8 +108,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_04_08_084629) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "rails", "characters"
-  add_foreign_key "rails", "users"
   add_foreign_key "user_characters", "characters"
   add_foreign_key "user_characters", "users"
 end
